@@ -17,14 +17,19 @@ public class EmployeeView extends Layout{
     private JTabbedPane tabbedPane1;
     private JTable tbl_emp_hotels;
     private JLabel lbl_hotel_welcome;
+    private JTable tbl_emp_seasons;
+    private JTable table1;
+    private JTable table2;
     private Hotel hotel;
     private User user;
     private final DefaultTableModel tmbl_hotels = new DefaultTableModel();
+    private final DefaultTableModel tmbl_seasons = new DefaultTableModel();
     private final HotelManager hotelManager;
     private final HotelFeatureManager hotelFeatureManager;
     private final PensionManager pensionManager;
     private final SeasonManager seasonManager;
     private Object[] col_hotel;
+    private Object[] col_season;
     private JPopupMenu hotel_menu;
 
     public EmployeeView (User user) {
@@ -41,6 +46,7 @@ public class EmployeeView extends Layout{
         this.lbl_hotel_welcome.setText("Hoşgeldiniz " + this.user.getName());
         loadHotelTable();
         loadHotelComponent();
+        loadSeasonTable();
     }
 
     public void loadHotelTable() {
@@ -48,6 +54,12 @@ public class EmployeeView extends Layout{
                 "Adres", "Pansiyon Özellikleri", "Tesis Özellikleri",  "Sezonlar" };
         ArrayList<Object[]> hotelList = this.hotelManager.getForTable(col_hotel.length, this.hotelManager.findHotelsWithFeatures());
         createTable(this.tmbl_hotels, this.tbl_emp_hotels, col_hotel, hotelList);
+    }
+
+    public void loadSeasonTable() {
+        this.col_season = new Object[]{"ID", "Sezon Başlangıcı", "Sezon Bitişi", "Sezon İsmi"};
+        ArrayList<Object[]> seasonList = this.seasonManager.getForTable(col_season.length, this.seasonManager.findAll());
+        createTable(this.tmbl_seasons, this.tbl_emp_seasons, col_season, seasonList);
     }
 
     private void loadHotelComponent() {

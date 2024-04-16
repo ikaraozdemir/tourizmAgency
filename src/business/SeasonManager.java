@@ -53,4 +53,18 @@ public class SeasonManager {
         return this.seasonDao.delete(hotelId);
     }
 
+        public ArrayList<Object[]> getForTable(int size, ArrayList<Season> seasons) {
+        ArrayList<Object[]> seasonList = new ArrayList<>();
+        for (Season season : seasons) {
+            int i = 0;
+            Object[] rowObject = new Object[size];
+            rowObject[i++] = season.getSeasonId();
+            rowObject[i++] = season.getStrtDate();
+            rowObject[i++] = season.getEndDate();
+            rowObject[i++] = season.getSeasonName();
+            seasonList.add(rowObject);
+        }
+        return seasonList;
+    }
+
 }
