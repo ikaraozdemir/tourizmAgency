@@ -49,6 +49,8 @@ public class HotelView extends Layout {
     private final HotelFeatureManager hotelFeatureManager;
     private final PensionManager pensionManager;
     private final SeasonManager seasonManager;
+    private ArrayList<JCheckBox> cbHotelFeatures = new ArrayList<>();
+    private ArrayList<JCheckBox> cbPension = new ArrayList<>();
 
     public HotelView(Hotel hotel) {
         this.hotelManager = new HotelManager();
@@ -59,11 +61,57 @@ public class HotelView extends Layout {
         this.hotel = hotel;
         this.guiInitialize(700, 700);
 
-//        if (this.hotel.getHotelId() != 0) {
-//            this.fld_hotel_city.setText(this.hotel.getCity());
-//            this.fld_hotel_region.setText();
-//
-//        }
+        cbHotelFeatures.add(ucretsizOtopark_cb);
+        cbHotelFeatures.add(hotelConcierge_cb);
+        cbHotelFeatures.add(yuzmeHavuzu_cb);
+        cbHotelFeatures.add(fitnessCenter_cb);
+        cbHotelFeatures.add(ucretsizWifi_cb);
+        cbHotelFeatures.add(SPA_cb);
+        cbHotelFeatures.add(yediYirmidortOdaServisi_cb);
+
+        cbPension.add(ultraHerseyDahil_cb);
+        cbPension.add(herseyDahil_cb);
+        cbPension.add(odaKahvalti_cb);
+        cbPension.add(yarimPansiyon_cb);
+        cbPension.add(tamPansiyon_cb);
+        cbPension.add(alkolHaricFullCredit_cb);
+        cbPension.add(sadeceYatak_cb);
+
+
+
+        if (this.hotel.getHotelId() != 0) {
+            this.fld_hotel_city.setText(this.hotel.getCity());
+            this.fld_hotel_region.setText(this.hotel.getRegion());
+            this.fld_hotel_name.setText(this.hotel.getHotelName());
+            this.fld_hotel_phno.setText(this.hotel.getHotelPhno());
+            this.fld_hotel_mail.setText(this.hotel.getHotelMail());
+            this.fld_hotel_star.setText(this.hotel.getStar());
+            this.fld_hotel_address.setText(this.hotel.getHotelAddress());
+
+            ArrayList<HotelFeature> featuresFromDb = hotelFeatureManager.getFeaturesByHotelId(this.hotel.getHotelId());
+            for (JCheckBox checkBox : cbHotelFeatures) {
+                for (HotelFeature feature : featuresFromDb) {
+                    if (checkBox.getText().equalsIgnoreCase(feature.getHotelFeature())) {
+                        checkBox.setSelected(true); // Eşleşen checkbox'ı seçili hale getirin
+                    }
+                }
+            }
+
+            ArrayList<Pension> pensionsFromDb = pensionManager.getPensionsByHotelId(this.hotel.getHotelId());
+            for (JCheckBox checkBox : cbPension) {
+                for (Pension pension : pensionsFromDb) {
+                    if (checkBox.getText().equalsIgnoreCase(pension.getPensionType())) {
+                        checkBox.setSelected(true); // Eşleşen checkbox'ı seçili hale getirin
+                    }
+                }
+            }
+
+            ArrayList<Season> seasonsFromDb = seasonManager.getSeasonsByHotelId(this.hotel.getHotelId());
+            for (Season season : seasonsFromDb) {
+                this.fld_hotel_season_strt.setText(String.valueOf(season.getStrtDate()));
+                this.fld_hotel_season_end.setText(String.valueOf(season.getEndDate()));
+            }
+        }
 
         btn_hotel_save.addActionListener(e -> {
             if (Helper.isFieldListEmpty(new JTextField[]{this.fld_hotel_city, fld_hotel_region, fld_hotel_name, fld_hotel_phno, fld_hotel_mail, fld_hotel_star, fld_hotel_address})) {
@@ -81,13 +129,16 @@ public class HotelView extends Layout {
                 this.hotel.setHotelMail(fld_hotel_mail.getText());
                 this.hotel.setStar(fld_hotel_star.getText());
                 this.hotel.setHotelAddress(fld_hotel_address.getText());
+
+                // iyileştirilecek
                 ArrayList<Season> seasons = new ArrayList<>();
                 this.hotel.setSeasons(seasons);
                 LocalDate dateStartSummer = LocalDate.of(2024, 6, 1);
                 LocalDate dateEndSummer = LocalDate.of(2024, 12, 30);
 
-
-                if (LocalDate.parse(fld_hotel_season_strt.getText()).equals(dateStartSummer) && LocalDate.parse(fld_hotel_season_end.getText()).equals(dateEndSummer)) {
+                // iyileştirilecek
+                if (LocalDate.parse(fld_hotel_season_strt.getText()).equals(dateStartSummer)
+                        && LocalDate.parse(fld_hotel_season_end.getText()).equals(dateEndSummer)) {
                     Season season = new Season();
                     season.setSeasonName("yaz");
                     season.setStrtDate(LocalDate.parse(fld_hotel_season_strt.getText()));
@@ -103,14 +154,9 @@ public class HotelView extends Layout {
 
                 this.hotel.setSeasons(seasons);
 
-                ArrayList<JCheckBox> cbHotelFeatures = new ArrayList<>();
-                cbHotelFeatures.add(ucretsizOtopark_cb);
-                cbHotelFeatures.add(hotelConcierge_cb);
-                cbHotelFeatures.add(yuzmeHavuzu_cb);
-                cbHotelFeatures.add(fitnessCenter_cb);
-                cbHotelFeatures.add(ucretsizWifi_cb);
-                cbHotelFeatures.add(SPA_cb);
-                cbHotelFeatures.add(yediYirmidortOdaServisi_cb);
+//                ArrayList<JCheckBox> cbHotelFeatures = new ArrayList<>();
+
+
                 ArrayList<HotelFeature> selectedFeatures = new ArrayList<>();
                 for (JCheckBox checkBox : cbHotelFeatures) {
                     if (checkBox.isSelected()) {
@@ -121,17 +167,10 @@ public class HotelView extends Layout {
                         this.hotel.setHotelFeatures(selectedFeatures);
                     }
                 }
-                ArrayList<JCheckBox> cbPension = new ArrayList<>();
-                cbPension.add(ultraHerseyDahil_cb);
-                cbPension.add(herseyDahil_cb);
-                cbPension.add(odaKahvalti_cb);
-                cbPension.add(yarimPansiyon_cb);
-                cbPension.add(tamPansiyon_cb);
-                cbPension.add(alkolHaricFullCredit_cb);
-                cbPension.add(sadeceYatak_cb);
+//                ArrayList<JCheckBox> cbPension = new ArrayList<>();
+
 
                 ArrayList<Pension> selectedPensions = new ArrayList<>();
-
                 for (JCheckBox checkBox : cbPension) {
                     if (checkBox.isSelected()) {
                         Pension pension = new Pension();
@@ -141,8 +180,27 @@ public class HotelView extends Layout {
                         this.hotel.setPensionTypes(selectedPensions);
                     }
                 }
+                //güncelle
                 if (this.hotel.getHotelId() != 0) {
-//                    result = this.hotelManager.update(this.hotel);
+                    result = this.hotelManager.update(this.hotel);
+                    this.hotelFeatureManager.delete(this.hotel.getHotelId());
+                    for (HotelFeature feature : selectedFeatures) {
+//                        System.out.println(feature.getHotelFeature() + "alındı");
+                        feature.setHotelFeatureHotelId(this.hotel.getHotelId());
+                        result2 = hotelFeatureManager.save(feature);
+                    }
+                    this.pensionManager.delete(this.hotel.getHotelId());
+                    for (Pension pension : selectedPensions) {
+//                        System.out.println(pension.getPensionType() + "alındı");
+                        pension.setPensionHotelId(this.hotel.getHotelId());
+                        result3 = pensionManager.save(pension);
+                    }
+                    this.seasonManager.delete(this.hotel.getHotelId());
+                    for (Season season : this.hotel.getSeasons()) {
+//                        System.out.println(season.getSeasonName() + "alındı");
+                        season.setSeasonHotelId(this.hotel.getHotelId());
+                        result4 = seasonManager.save(season);
+                    }
                     dispose();
                 } else {
                     int hotelId = this.hotelManager.saveAndGetHotelId(this.hotel);

@@ -84,6 +84,8 @@ public class HotelManager {
         return this.hotelDao.getById(id);
     }
 
+
+
     public ArrayList<Hotel> findHotelsWithFeatures() {
         return this.hotelDao.findHotelsWithFeatures();
     }
@@ -96,12 +98,12 @@ public class HotelManager {
         return this.hotelDao.update(hotel);
     }
 
-    public boolean delete(int id) {
-        if (this.getById(id) == null) {
-            Helper.showMessage(id + "ID kayıtlı otel bulunamadı !");
+    public boolean delete(int hotelId) {
+        if (this.getById(hotelId) == null) {
+            Helper.showMessage("kayıt bulunamadı");
             return false;
         }
-        return this.hotelDao.delete(id);
+        return this.hotelDao.delete(hotelId);
     }
 
 

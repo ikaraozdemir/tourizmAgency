@@ -2,6 +2,7 @@ package business;
 
 import core.Helper;
 import dao.SeasonDao;
+import entity.HotelFeature;
 import entity.Pension;
 import entity.Season;
 
@@ -32,6 +33,24 @@ public class SeasonManager {
         return this.seasonDao.save(season);
     }
 
+    public ArrayList<Season> getSeasonsByHotelId(int id){
+        return this.seasonDao.getSeasonsByHotelId(id);
+    }
 
+//    public boolean update(Season season) {
+//        if (this.getById(season.getSeasonId()) == null) {
+//            Helper.showMessage("notFound");
+//            return false;
+//        }
+//        return this.seasonDao.update(season);
+//    }
+
+    public boolean delete(int hotelId) {
+        if (this.getSeasonsByHotelId(hotelId) == null) {
+            Helper.showMessage("kayıt bulunamadı");
+            return false;
+        }
+        return this.seasonDao.delete(hotelId);
+    }
 
 }

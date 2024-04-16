@@ -24,13 +24,24 @@ public class HotelFeatureManager {
     }
 
     public boolean save(HotelFeature hotelFeature) {
-
         if (this.getById(hotelFeature.getHotelFeatureId()) != null) {
             Helper.showMessage("error");
             return false;
         }
-
         return this.hotelFeatureDao.save(hotelFeature);
+    }
+
+    public boolean update(HotelFeature hotelFeature) {
+        if (this.getFeaturesByHotelId(hotelFeature.getHotelFeatureHotelId()) == null) {
+            System.out.println(hotelFeature.getHotelFeatureId());
+            Helper.showMessage("notFound");
+            return false;
+        }
+        return this.hotelFeatureDao.update(hotelFeature);
+    }
+
+    public ArrayList<HotelFeature> getFeaturesByHotelId(int id){
+        return this.hotelFeatureDao.getFeaturesByHotelId(id);
     }
 
 //    public ArrayList<Object[]> getForTable(int size, ArrayList<User> users) {
@@ -55,13 +66,13 @@ public class HotelFeatureManager {
 //        return this.carDao.update(car);
 //    }
 //
-//    public boolean delete(int id) {
-//        if (this.getById(id) == null) {
-//            Helper.showMsg(id + " ID kayıtlı model bulunamadı");
-//            return false;
-//        }
-//        return this.carDao.delete(id);
-//    }
+    public boolean delete(int hotelId) {
+        if (this.getFeaturesByHotelId(hotelId) == null) {
+            Helper.showMessage("kayıt bulunamadı");
+            return false;
+        }
+        return this.hotelFeatureDao.delete(hotelId);
+    }
 
 
 }

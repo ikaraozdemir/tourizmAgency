@@ -1,7 +1,6 @@
 package view;
 
-import business.HotelManager;
-import business.UserManager;
+import business.*;
 import core.Helper;
 import entity.Hotel;
 import entity.User;
@@ -22,11 +21,17 @@ public class EmployeeView extends Layout{
     private User user;
     private final DefaultTableModel tmbl_hotels = new DefaultTableModel();
     private final HotelManager hotelManager;
+    private final HotelFeatureManager hotelFeatureManager;
+    private final PensionManager pensionManager;
+    private final SeasonManager seasonManager;
     private Object[] col_hotel;
     private JPopupMenu hotel_menu;
 
     public EmployeeView (User user) {
         this.hotelManager = new HotelManager();
+        this.hotelFeatureManager = new HotelFeatureManager();
+        this.pensionManager = new PensionManager();
+        this.seasonManager = new SeasonManager();
         this.user = user;
         this.add(container);
         this.guiInitialize(1000,500);
@@ -60,28 +65,31 @@ public class EmployeeView extends Layout{
             });
         });
 
-       /* this.car_menu.add("Güncelle").addActionListener(e -> {
-            int selectCarId = this.getTableSelectedRow(tbl_car,0);
-            CarView carView = new CarView(this.carManager.getById(selectCarId));
-            carView.addWindowListener(new WindowAdapter() {
+       this.hotel_menu.add("Güncelle").addActionListener(e -> {
+            int selectHotelId = this.getTableSelectedRow(tbl_emp_hotels,0);
+            HotelView hotelView = new HotelView(this.hotelManager.getById(selectHotelId));
+           hotelView.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    loadCarTable();
+                    loadHotelTable();
 
                 }
             });
         });
-        this.car_menu.add("Sil").addActionListener(e -> {
+        this.hotel_menu.add("Sil").addActionListener(e -> {
             if (Helper.confirm("sure")){
-                int selectCartId = this.getTableSelectedRow(tbl_car,0);
-                if (this.carManager.delete(selectCartId)){
-                    Helper.showMsg("done");
-                    loadCarTable();
+                int selectHoteltId = this.getTableSelectedRow(tbl_emp_hotels,0);
+                if (this.hotelManager.delete(selectHoteltId) &&
+                        this.hotelFeatureManager.delete(selectHoteltId) &&
+                        this.pensionManager.delete(selectHoteltId) &&
+                        this.seasonManager.delete(selectHoteltId)) {
+                    Helper.showMessage("done");
+                    loadHotelTable();
                 }else{
-                    Helper.showMsg("error");
+                    Helper.showMessage("error");
                 }
             }
-        });*/
+        });
         this.tbl_emp_hotels.setComponentPopupMenu(hotel_menu);
 
 

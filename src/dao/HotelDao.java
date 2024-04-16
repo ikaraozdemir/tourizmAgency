@@ -16,9 +16,36 @@ public class HotelDao {
         this.connection = Database.getInstance();
     }
 
-    public Hotel getById(int id) {
+//    public Hotel getById(int id) {
+//        Hotel hotel = null;
+//        String query = "SELECT * FROM public.hotel WHERE hotel_id = ?";
+//        try {
+//            PreparedStatement pr = this.connection.prepareStatement(query);
+//            pr.setInt(1, id);
+//            ResultSet rs = pr.executeQuery();
+//            if (rs.next()) {
+//                hotel = this.match(rs);
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return hotel;
+//    }
+
+
+        public Hotel getById(int id) {
         Hotel hotel = null;
-        String query = "SELECT * FROM public.hotel WHERE hotel_id = ?";
+        String query =
+                "SELECT hotel.* , " +
+                "ARRAY_AGG(DISTINCT pension.pension_types) AS pension_types, " +
+                "ARRAY_AGG(DISTINCT hotel_features.hotel_features) AS hotel_features, " +
+                "ARRAY_AGG(DISTINCT season.season_name) AS season_names " +
+                "FROM hotel " +
+                "LEFT JOIN pension ON hotel.hotel_id = pension.pension_hotel_id " +
+                "LEFT JOIN hotel_features ON hotel.hotel_id = hotel_features.hotel_features_hotel_id " +
+                "LEFT JOIN season ON hotel.hotel_id = season.season_hotel_id " +
+                        " WHERE hotel_id = ? " +
+                "GROUP BY hotel.hotel_id;";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
             pr.setInt(1, id);
@@ -146,14 +173,15 @@ public class HotelDao {
                 "WHERE hotel_id = ?";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-            pr.setInt(1, hotel.getHotelId());
-            pr.setString(2, hotel.getCity());
-            pr.setString(3, hotel.getRegion());
-            pr.setString(4, hotel.getHotelName());
-            pr.setString(5, hotel.getHotelPhno());
-            pr.setString(6, hotel.getHotelMail());
-            pr.setString(7, hotel.getStar());
-            pr.setString(8, hotel.getHotelAddress());
+
+            pr.setString(1, hotel.getCity());
+            pr.setString(2, hotel.getRegion());
+            pr.setString(3, hotel.getHotelName());
+            pr.setString(4, hotel.getHotelPhno());
+            pr.setString(5, hotel.getHotelMail());
+            pr.setString(6, hotel.getStar());
+            pr.setString(7, hotel.getHotelAddress());
+            pr.setInt(8, hotel.getHotelId());
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -161,17 +189,18 @@ public class HotelDao {
         return true;
     }
 
-    public boolean delete(int id) {
+    public boolean delete(int hotelId) {
         String query = "DELETE FROM public.hotel WHERE hotel_id = ?";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-            pr.setInt(1, id);
+            pr.setInt(1, hotelId);
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return true;
     }
+
 
     public Hotel match(ResultSet rs) throws SQLException {
         Hotel hotel = new Hotel();

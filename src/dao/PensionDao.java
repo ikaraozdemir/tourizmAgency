@@ -57,26 +57,18 @@ public class PensionDao {
         return pension;
     }
 
-//    public boolean update(Car car) {
-//        String query = "UPDATE public.car SET " +
-//                "car_model_id = ? , " +
-//                "car_color = ? , " +
-//                "car_km = ? , " +
-//                "car_plate = ? " +
-//                "WHERE car_id = ?";
-//        try {
-//            PreparedStatement pr = this.connection.prepareStatement(query);
-//            pr.setInt(1, car.getModel_id());
-//            pr.setString(2, car.getColor().toString());
-//            pr.setInt(3, car.getKm());
-//            pr.setString(4, car.getPlate());
-//            pr.setInt(5, car.getId());
-//            return pr.executeUpdate() != -1;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return true;
-//    }
+    public boolean delete(int hotelId) {
+        String query = "DELETE FROM public.pension WHERE pension_hotel_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, hotelId);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
 
     public boolean save(Pension pension) {
         String query = "INSERT INTO public.pension (" +
@@ -95,6 +87,45 @@ public class PensionDao {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public ArrayList<Pension> getPensionsByHotelId(int hotelId) {
+        ArrayList<Pension> selectedPensions = new ArrayList<>();
+        String query = "SELECT * FROM public.pension WHERE pension_hotel_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, hotelId);
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                Pension pension = new Pension();
+                pension.setPensionId(rs.getInt("pension_id"));
+                pension.setPensionType(rs.getString("pension_types"));
+                pension.setPensionHotelId(rs.getInt("pension_hotel_id"));
+                selectedPensions.add(pension);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return selectedPensions;
+
+    }
+
+    public boolean update(Pension pension) {
+        String query = "UPDATE public.pension SET " +
+                "pension_hotel_id = ? , " +
+                "pension_types = ? , " +
+                "WHERE pension_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, pension.getPensionHotelId());
+            pr.setString(2,pension.getPensionType());
+            pr.setInt(3,pension.getPensionId());
+
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
 //    public boolean delete(int carId) {

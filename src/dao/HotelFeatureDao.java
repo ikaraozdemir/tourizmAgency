@@ -58,26 +58,21 @@ public class HotelFeatureDao {
         return hotelFeature;
     }
 
-//    public boolean update(Car car) {
-//        String query = "UPDATE public.car SET " +
-//                "car_model_id = ? , " +
-//                "car_color = ? , " +
-//                "car_km = ? , " +
-//                "car_plate = ? " +
-//                "WHERE car_id = ?";
-//        try {
-//            PreparedStatement pr = this.connection.prepareStatement(query);
-//            pr.setInt(1, car.getModel_id());
-//            pr.setString(2, car.getColor().toString());
-//            pr.setInt(3, car.getKm());
-//            pr.setString(4, car.getPlate());
-//            pr.setInt(5, car.getId());
-//            return pr.executeUpdate() != -1;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return true;
-//    }
+    public boolean update(HotelFeature hotelFeature) {
+        String query = "UPDATE public.hotel_features SET " +
+                "hotel_features = ?  " +
+                "WHERE hotel_features_hotel_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setString(1,hotelFeature.getHotelFeature());
+            pr.setInt(2,hotelFeature.getHotelFeatureHotelId());
+
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 
     public boolean save(HotelFeature hotelFeature) {
         String query = "INSERT INTO public.hotel_features (" +
@@ -98,15 +93,39 @@ public class HotelFeatureDao {
         }
     }
 
-//    public boolean delete(int carId) {
-//        String query = "DELETE FROM public.car WHERE car_id = ?";
-//        try {
-//            PreparedStatement pr = this.connection.prepareStatement(query);
-//            pr.setInt(1, carId);
-//            return pr.executeUpdate() != -1;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return true;
-//    }
+    public ArrayList<HotelFeature> getFeaturesByHotelId(int hotelId) {
+        ArrayList<HotelFeature> selectedFeatures = new ArrayList<>();
+        String query = "SELECT * FROM public.hotel_features WHERE hotel_features_hotel_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, hotelId);
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                HotelFeature feature = new HotelFeature();
+                feature.setHotelFeatureId(rs.getInt("hotel_features_id"));
+//                System.out.println(feature.getHotelFeatureId());
+                feature.setHotelFeature(rs.getString("hotel_features"));
+//                System.out.println(feature.getHotelFeature());
+                feature.setHotelFeatureHotelId(rs.getInt("hotel_features_hotel_id"));
+//                System.out.println(feature.getHotelFeatureHotelId());
+                selectedFeatures.add(feature);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return selectedFeatures;
+
+    }
+
+    public boolean delete(int hotelId) {
+        String query = "DELETE FROM public.hotel_features WHERE hotel_features_hotel_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, hotelId);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 }
