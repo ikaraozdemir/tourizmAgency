@@ -137,7 +137,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="f0e8" class="javax.swing.JTable" binding="table1" default-binding="true">
+                      <component id="f0e8" class="javax.swing.JTable" binding="tbl_emp_rooms">
                         <constraints/>
                         <properties/>
                       </component>

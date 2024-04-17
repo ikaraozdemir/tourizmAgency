@@ -29,6 +29,7 @@ public class PensionManager {
 
         return this.pensionDao.save(pension);
     }
+
     public ArrayList<Pension> getPensionsByHotelId(int id){
         return this.pensionDao.getPensionsByHotelId(id);
     }

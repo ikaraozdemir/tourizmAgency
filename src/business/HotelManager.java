@@ -41,15 +41,13 @@ public class HotelManager {
                 hotelFeatureList.add(hotelFeature.getHotelFeature());
             }
             rowObject[i++] = hotelFeatureList;
-            hotelObjList.add(rowObject);
 
             ArrayList<String> seasonNameList = new ArrayList<>();
             for (Season season : hotel.getSeasons()) {
                 seasonNameList.add(season.getSeasonName());
             }
             rowObject[i++] = seasonNameList;
-
-
+            hotelObjList.add(rowObject);
         }
         return hotelObjList;
     }

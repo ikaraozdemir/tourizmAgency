@@ -31,14 +31,14 @@ public class HotelFeatureManager {
         return this.hotelFeatureDao.save(hotelFeature);
     }
 
-    public boolean update(HotelFeature hotelFeature) {
-        if (this.getFeaturesByHotelId(hotelFeature.getHotelFeatureHotelId()) == null) {
-            System.out.println(hotelFeature.getHotelFeatureId());
-            Helper.showMessage("notFound");
-            return false;
-        }
-        return this.hotelFeatureDao.update(hotelFeature);
-    }
+//    public boolean update(HotelFeature hotelFeature) {
+//        if (this.getFeaturesByHotelId(hotelFeature.getHotelFeatureHotelId()) == null) {
+//            System.out.println(hotelFeature.getHotelFeatureId());
+//            Helper.showMessage("notFound");
+//            return false;
+//        }
+//        return this.hotelFeatureDao.update(hotelFeature);
+//    }
 
     public ArrayList<HotelFeature> getFeaturesByHotelId(int id){
         return this.hotelFeatureDao.getFeaturesByHotelId(id);

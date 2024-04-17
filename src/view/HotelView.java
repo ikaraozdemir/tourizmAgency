@@ -49,8 +49,8 @@ public class HotelView extends Layout {
     private final HotelFeatureManager hotelFeatureManager;
     private final PensionManager pensionManager;
     private final SeasonManager seasonManager;
-    private ArrayList<JCheckBox> cbHotelFeatures = new ArrayList<>();
-    private ArrayList<JCheckBox> cbPension = new ArrayList<>();
+    private final ArrayList<JCheckBox> cbHotelFeatures = new ArrayList<>();
+    private final ArrayList<JCheckBox> cbPension = new ArrayList<>();
 
     public HotelView(Hotel hotel) {
         this.hotelManager = new HotelManager();
