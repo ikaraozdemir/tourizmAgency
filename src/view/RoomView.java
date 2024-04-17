@@ -102,7 +102,7 @@ public class RoomView extends Layout {
                         selectedFeatures.add(feature);
                     }
                 }
-                this.room.setRoomFeature(selectedFeatures);
+                this.room.setRoomFeatures(selectedFeatures);
                 this.room.setType((Room.Type) this.cmb_room_type.getSelectedItem());
 
                 for (Pension pension: pensions){

@@ -51,7 +51,7 @@ public class RoomFeatureDao {
 
     public boolean save(RoomFeature roomFeature) {
         String query = "INSERT INTO public.room_features (" +
-                "room_features_room_id, " +
+                "room_feature_room_id, " +
                 "feature_name, " +
                 "feature_value) " +
                 "VALUES (?, ?, ?)";

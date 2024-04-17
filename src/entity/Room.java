@@ -14,7 +14,7 @@ public class Room {
     private Season season;
     private Hotel hotel;
     private Pension pension;
-    private ArrayList<RoomFeature> roomFeature;
+    private ArrayList<RoomFeature> roomFeatures;
 
     public Room() {
     }
@@ -90,12 +90,12 @@ public class Room {
         this.type = type;
     }
 
-    public ArrayList<RoomFeature> getRoomFeature() {
-        return roomFeature;
+    public ArrayList<RoomFeature> getRoomFeatures() {
+        return roomFeatures;
     }
 
-    public void setRoomFeature(ArrayList<RoomFeature> roomFeature) {
-        this.roomFeature = roomFeature;
+    public void setRoomFeatures(ArrayList<RoomFeature> roomFeatures) {
+        this.roomFeatures = roomFeatures;
     }
 
     public Season getSeason() {
@@ -136,7 +136,7 @@ public class Room {
                 ", season=" + season +
                 ", hotel=" + hotel +
                 ", pension=" + pension +
-                ", roomFeature=" + roomFeature +
+                ", roomFeature=" + roomFeatures +
                 '}';
     }
 }

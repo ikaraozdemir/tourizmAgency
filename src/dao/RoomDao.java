@@ -1,14 +1,13 @@
 package dao;
 
 import core.Database;
-import entity.Pension;
-import entity.Room;
+import entity.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RoomDao {
     private Connection connection;
@@ -100,7 +99,7 @@ public class RoomDao {
                 "room_type) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
-            PreparedStatement pr = this.connection.prepareStatement(query);
+            PreparedStatement pr = this.connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
             pr.setInt(1, room.getRoomHotelId());
             System.out.println(room.getRoomHotelId());
             pr.setInt(2,room.getSeason().getSeasonId());
@@ -117,7 +116,9 @@ public class RoomDao {
             System.out.println(String.valueOf(room.getType()));
             pr.executeUpdate();
             ResultSet generatedKeys = pr.getGeneratedKeys();
+
             if (generatedKeys.next()) {
+                System.out.println(generatedKeys.getInt(1));
                 generatedId = generatedKeys.getInt(1);
             } else {
                 throw new SQLException("Oda ekleme başarısız, oda id alınamadı.");
@@ -127,6 +128,88 @@ public class RoomDao {
         }
         return generatedId;
     }
+
+
+
+
+    public ArrayList<Room> getRoomsWithDetails() {
+        ArrayList<Room> rooms = new ArrayList<>();
+        ArrayList<RoomFeature> roomFeaturesList = new ArrayList<>();
+        Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
+
+
+        String query = "SELECT " +
+                "r.room_id, " +
+                "r.room_type, " +
+                "r.room_stock, " +
+                "r.prc_for_child, " +
+                "r.prc_for_adult, " +
+                "h.hotel_id, " +
+                "h.hotel_name, " +
+                "s.season_id, " +
+                "s.season_start, " +
+                "s.season_end, " +
+                "s.season_name, " +
+                "p.pension_id, " +
+                "p.pension_types, " +
+                "ARRAY_AGG(rf.feature_name) AS feature_names, " +
+                "ARRAY_AGG(rf.feature_value) AS feature_values " + // Boşluk eklenmiş
+                "FROM room r " +
+                "INNER JOIN hotel h ON r.room_hotel_id = h.hotel_id " +
+                "INNER JOIN season s ON r.room_season_id = s.season_id " +
+                "INNER JOIN pension p ON r.room_pension_id = p.pension_id " +
+                "LEFT JOIN room_features rf ON r.room_id = rf.room_feature_room_id " +
+                "GROUP BY r.room_id, h.hotel_id, h.hotel_name, s.season_id, s.season_name, p.pension_id, p.pension_types";
+
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                Room room = new Room();
+                room.setRoomId(rs.getInt("room_id"));
+                room.setRoomStock(rs.getInt("room_stock"));
+                room.setPriceAdult(rs.getInt("prc_for_adult"));
+                room.setPriceChild(rs.getInt("prc_for_child"));
+                room.setType(Room.Type.valueOf(rs.getString("room_type")));
+
+                Hotel hotel = new Hotel();
+                hotel.setHotelName(rs.getString("hotel_name"));
+                room.setHotel(hotel);
+
+                Season season = new Season();
+                season.setSeasonName(rs.getString("season_name"));
+                season.setStrtDate(rs.getDate("season_start").toLocalDate());
+                season.setEndDate(rs.getDate("season_end").toLocalDate());
+                room.setSeason(season);
+
+                Pension pension = new Pension();
+                pension.setPensionType(rs.getString("pension_types"));
+                room.setPension(pension);
+
+//                HashMap<String, String> roomFeature = new HashMap<>();
+                Matcher matcher = pattern.matcher(rs.getString("feature_names"));
+                Matcher matcher2 = pattern.matcher(rs.getString("feature_values"));
+
+                while (matcher.find() && matcher2.find()) {
+                    String featureName = matcher.group(1);
+                    String featureValue = matcher2.group(1);
+
+                    RoomFeature roomFeature = new RoomFeature(); // Her döngüde yeni bir nesne oluşturun
+                    roomFeature.addRoomFeature(featureName, featureValue); // Oluşturulan nesneye özellikleri ekleyin
+                    roomFeaturesList.add(roomFeature); // Listeye nesneyi ekleyin
+                }
+
+                room.setRoomFeatures(roomFeaturesList);
+
+                rooms.add(room);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rooms;
+    }
+
+
 
 
 
@@ -140,6 +223,7 @@ public class RoomDao {
         room.setPriceAdult(rs.getInt("prc_for_adult"));
         room.setPriceChild(rs.getInt("prc_for_child"));
         room.setType(Room.Type.valueOf(rs.getString("room_type")));
+
         return room;
     }
 

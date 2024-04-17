@@ -150,6 +150,8 @@ public class HotelDao {
             pr.executeUpdate();
             ResultSet generatedKeys = pr.getGeneratedKeys();
             if (generatedKeys.next()) {
+                System.out.println(generatedKeys.getInt(1) + " otel");
+
                 generatedId = generatedKeys.getInt(1);
             } else {
                 throw new SQLException("Otel ekleme başarısız, otel id alınamadı.");

@@ -53,6 +53,7 @@ public class EmployeeView extends Layout{
         loadHotelComponent();
 
         loadSeasonTable();
+        loadRoomTable();
     }
 
     public void loadHotelTable() {
@@ -71,7 +72,7 @@ public class EmployeeView extends Layout{
     public void loadRoomTable() {
         this.col_room = new Object[]{"ID", "Otel", "Sezon Başlangıcı", "Sezon Bitişi", "Pansiyon Tipi",
                 "Oda Stoğu", "Yetişkin İçin Fiyat", "Çocuk İçin Fiyat", "Oda Tipi", "Oda Özellikleri"};
-        ArrayList<Object[]> roomList = this.roomManager.getForTable(col_room.length, this.roomManager.findAll());
+        ArrayList<Object[]> roomList = this.roomManager.getForTable(col_room.length, this.roomManager.getRoomsWithDetails());
         createTable(this.tmbl_rooms, this.tbl_emp_rooms, col_room, roomList);
     }
 

@@ -6,6 +6,8 @@ import dao.RoomDao;
 import entity.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RoomManager {
     private RoomDao roomDao;
@@ -20,6 +22,10 @@ public class RoomManager {
 
     public ArrayList<Room> findAll() {
         return this.roomDao.findAll();
+    }
+
+    public ArrayList<Room> getRoomsWithDetails() {
+        return this.roomDao.getRoomsWithDetails();
     }
 
     public boolean save(Room room) {
@@ -46,9 +52,16 @@ public class RoomManager {
             rowObject[i++] = room.getPriceChild();
             rowObject[i++] = room.getType();
             ArrayList<String> roomFeatureList = new ArrayList<>();
-            for (RoomFeature roomFeature : room.getRoomFeature()) {
-               roomFeatureList.add(roomFeature.getRoomFeature().toString());
+            for (RoomFeature feature : room.getRoomFeatures()) {
+                for (Map.Entry<String, Object> entry : feature.getRoomFeature().entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    String keyValueString = key + ": " + value.toString();
+                    roomFeatureList.add(keyValueString);
+                }
             }
+
+
             rowObject[i++] = roomFeatureList;
             roomObjList.add(rowObject);
         }
