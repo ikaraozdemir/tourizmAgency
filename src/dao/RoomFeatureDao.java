@@ -70,17 +70,32 @@ public class RoomFeatureDao {
         }
     }
 
-    public boolean delete(int roomId) {
-        String query = "DELETE FROM public.room_features WHERE room_features_room_id = ?";
+
+
+    public ArrayList<RoomFeature> getFeaturesByRoomId(int roomId) {
+        ArrayList<RoomFeature> selectedFeatures = new ArrayList<>();
+        String query = "SELECT * FROM public.room_features WHERE room_feature_room_id = ?";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
             pr.setInt(1, roomId);
-            return pr.executeUpdate() != -1;
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                RoomFeature feature = new RoomFeature();
+                feature.setRoomFeatureId(rs.getInt("room_feature_id"));
+//                System.out.println(feature.getHotelFeatureId());
+                feature.setRoomFeatureRoomId(rs.getInt("room_feature_room_id"));
+//                System.out.println(feature.getHotelFeature());
+                feature.addRoomFeature(rs.getString("feature_name"),rs.getString("feature_value"));
+//                System.out.println(feature.getHotelFeatureHotelId());
+                selectedFeatures.add(feature);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return true;
+        return selectedFeatures;
+
     }
+
 
 
     public RoomFeature match(ResultSet rs) throws SQLException {
@@ -91,6 +106,18 @@ public class RoomFeatureDao {
 //        roomFeature.setFeatureValue(rs.getString("feature_value"));
 
         return roomFeature;
+    }
+
+    public boolean delete(int roomId) {
+        String query = "DELETE FROM public.room_features WHERE room_feature_room_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, roomId);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
 }

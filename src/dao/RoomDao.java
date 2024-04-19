@@ -1,5 +1,8 @@
 package dao;
 
+import business.HotelManager;
+import business.PensionManager;
+import business.SeasonManager;
 import core.Database;
 import entity.*;
 
@@ -9,10 +12,19 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+
+
 public class RoomDao {
+    private SeasonManager seasonManager;
+    private PensionManager pensionManager;
+    private HotelManager hotelManager;
     private Connection connection;
 
     public RoomDao() {
+        this.pensionManager = new PensionManager();
+        this.seasonManager = new SeasonManager();
+        this.hotelManager = new HotelManager();
         this.connection = Database.getInstance();
     }
 
@@ -23,7 +35,12 @@ public class RoomDao {
             PreparedStatement pr = this.connection.prepareStatement(query);
             pr.setInt(1, id);
             ResultSet rs = pr.executeQuery();
-            if (rs.next()) obj = this.match(rs);
+            if (rs.next()) {
+                obj = this.match(rs);
+                obj.setSeason(this.seasonManager.getById(obj.getRoomSeasonId()));
+                obj.setPension(this.pensionManager.getById(obj.getRoomPensionId()));
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -47,11 +64,11 @@ public class RoomDao {
         return rooms;
     }
 
-    public boolean delete(int hotelId) {
+    public boolean delete(int roomId) {
         String query = "DELETE FROM public.room WHERE room_id = ?";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-            pr.setInt(1, hotelId);
+            pr.setInt(1, roomId);
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -129,14 +146,8 @@ public class RoomDao {
         return generatedId;
     }
 
-
-
-
     public ArrayList<Room> getRoomsWithDetails() {
         ArrayList<Room> rooms = new ArrayList<>();
-        ArrayList<RoomFeature> roomFeaturesList = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
-
 
         String query = "SELECT " +
                 "r.room_id, " +
@@ -153,7 +164,7 @@ public class RoomDao {
                 "p.pension_id, " +
                 "p.pension_types, " +
                 "ARRAY_AGG(rf.feature_name) AS feature_names, " +
-                "ARRAY_AGG(rf.feature_value) AS feature_values " + // Boşluk eklenmiş
+                "ARRAY_AGG(rf.feature_value) AS feature_values " +
                 "FROM room r " +
                 "INNER JOIN hotel h ON r.room_hotel_id = h.hotel_id " +
                 "INNER JOIN season s ON r.room_season_id = s.season_id " +
@@ -174,6 +185,7 @@ public class RoomDao {
 
                 Hotel hotel = new Hotel();
                 hotel.setHotelName(rs.getString("hotel_name"));
+                hotel.setHotelId(rs.getInt("hotel_id"));
                 room.setHotel(hotel);
 
                 Season season = new Season();
@@ -186,19 +198,15 @@ public class RoomDao {
                 pension.setPensionType(rs.getString("pension_types"));
                 room.setPension(pension);
 
-//                HashMap<String, String> roomFeature = new HashMap<>();
-                Matcher matcher = pattern.matcher(rs.getString("feature_names"));
-                Matcher matcher2 = pattern.matcher(rs.getString("feature_values"));
-
-                while (matcher.find() && matcher2.find()) {
-                    String featureName = matcher.group(1);
-                    String featureValue = matcher2.group(1);
-
-                    RoomFeature roomFeature = new RoomFeature(); // Her döngüde yeni bir nesne oluşturun
-                    roomFeature.addRoomFeature(featureName, featureValue); // Oluşturulan nesneye özellikleri ekleyin
-                    roomFeaturesList.add(roomFeature); // Listeye nesneyi ekleyin
+                // Separate feature names and values for each room
+                ArrayList<RoomFeature> roomFeaturesList = new ArrayList<>();
+                String[] featureNames = (String[]) rs.getArray("feature_names").getArray();
+                String[] featureValues = (String[]) rs.getArray("feature_values").getArray();
+                for (int i = 0; i < featureNames.length; i++) {
+                    RoomFeature roomFeature = new RoomFeature();
+                    roomFeature.addRoomFeature(featureNames[i], featureValues[i]);
+                    roomFeaturesList.add(roomFeature);
                 }
-
                 room.setRoomFeatures(roomFeaturesList);
 
                 rooms.add(room);
@@ -209,7 +217,33 @@ public class RoomDao {
         return rooms;
     }
 
+    public boolean update(Room room) {
+        String query = "UPDATE public.room SET " +
+                "room_hotel_id = ? , " +
+                "room_season_id = ? , " +
+                "room_pension_id = ? , " +
+                "room_stock = ? , " +
+                "prc_for_child = ? , " +
+                "prc_for_adult = ?, " +
+                "room_type = ? " +
+                "WHERE room_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
 
+            pr.setInt(1, room.getRoomHotelId());
+            pr.setInt(2, room.getRoomSeasonId());
+            pr.setInt(3, room.getRoomPensionId());
+            pr.setInt(4, room.getRoomStock());
+            pr.setInt(5, room.getPriceChild());
+            pr.setInt(6, room.getPriceAdult());
+            pr.setString(7, String.valueOf(room.getType()));
+            pr.setInt(8, room.getRoomId());
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 
 
 
@@ -223,11 +257,10 @@ public class RoomDao {
         room.setPriceAdult(rs.getInt("prc_for_adult"));
         room.setPriceChild(rs.getInt("prc_for_child"));
         room.setType(Room.Type.valueOf(rs.getString("room_type")));
-
+        room.setHotel(this.hotelManager.getById(rs.getInt("room_hotel_id")));
+        room.setSeason(this.seasonManager.getById(rs.getInt("room_season_id")));
+        room.setPension(this.pensionManager.getById(rs.getInt("room_pension_id")));
         return room;
     }
-
-
-
 
 }

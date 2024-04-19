@@ -30,14 +30,17 @@ public class RoomFeatureManager {
         }
         return this.roomFeatureDao.save(roomFeature);
     }
+    public ArrayList<RoomFeature> getFeaturesByRoomId(int id){
+        return this.roomFeatureDao.getFeaturesByRoomId(id);
+    }
 
-//    public boolean delete(int roomId) {
-//        if (this.getFeaturesByRoomId(roomId) == null) {
-//            Helper.showMessage("kayıt bulunamadı");
-//            return false;
-//        }
-//        return this.roomFeatureDao.delete(roomId);
-//    }
+    public boolean delete(int roomId) {
+        if (this.getFeaturesByRoomId(roomId) == null) {
+            Helper.showMessage("kayıt bulunamadı");
+            return false;
+        }
+        return this.roomFeatureDao.delete(roomId);
+    }
 
 
 }
