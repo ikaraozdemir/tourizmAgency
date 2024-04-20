@@ -20,7 +20,7 @@ public class EmployeeView extends Layout{
     private JLabel lbl_hotel_welcome;
     private JTable tbl_emp_seasons;
     private JTable tbl_emp_rooms;
-    private JTable table2;
+    private JTable tbl_emp_reserv;
     private JTextField fld_room_checkin;
     private JTextField fld_room_checkout;
     private JTextField fld_room_hotel_filter;
@@ -34,6 +34,7 @@ public class EmployeeView extends Layout{
     private final DefaultTableModel tmbl_hotels = new DefaultTableModel();
     private final DefaultTableModel tmbl_seasons = new DefaultTableModel();
     private final DefaultTableModel tmbl_rooms = new DefaultTableModel();
+    private final DefaultTableModel tmbl_reserv = new DefaultTableModel();
     private final HotelManager hotelManager;
     private final HotelFeatureManager hotelFeatureManager;
     private final PensionManager pensionManager;
@@ -46,6 +47,8 @@ public class EmployeeView extends Layout{
     private Object[] col_reserv;
     private JPopupMenu hotel_menu;
     private JPopupMenu room_menu;
+    private Object[] col_searched_room = new Object[]{"ID", "Otel","Otel ID", "Sezon Başlangıcı", "Sezon Bitişi", "Pansiyon Tipi",
+            "Oda Stoğu", "Oda Tipi", "Oda Özellikleri", "Toplam Gün", "Yetişkin İçin Fiyat", "Çocuk İçin Fiyat", "Toplam Fiyat"};
 
     public EmployeeView (User user) {
         this.hotelManager = new HotelManager();
@@ -85,15 +88,17 @@ public class EmployeeView extends Layout{
     public void loadRoomTable() {
         this.col_room = new Object[]{"ID", "Otel","Otel ID", "Sezon Başlangıcı", "Sezon Bitişi", "Pansiyon Tipi",
                 "Oda Stoğu", "Yetişkin İçin Fiyat", "Çocuk İçin Fiyat", "Oda Tipi", "Oda Özellikleri"};
-        ArrayList<Object[]> roomList = this.roomManager.getForTable(col_room.length, this.roomManager.getRoomsWithDetails());
+        ArrayList<Object[]> roomList = this.roomManager.getForTable(col_room.length, this.roomManager.getRoomsWithDetails(-1));
         createTable(this.tmbl_rooms, this.tbl_emp_rooms, col_room, roomList);
     }
 
-    public void loadRezervationTable(ArrayList<Object[]> roomReservationRow) {
-        this.col_reserv = new Object[]{"ID", "Otel İsmi","Oda Tipi", "Check-in", "Check-out", "Misafir TC",
-                "Misafir İsim", "Misafir Numara", "Misafir Mail", "Yetişkin Misafir", "Çocuk Misafir", "Total Fiyat"};
-        createTable(this.tmbl_rooms, this.tbl_emp_reser, col_reserv, roomReservationRow);
-    }
+//    public void loadRezervationTable(ArrayList<Object[]> roomReservationRow) {
+//        this.col_reserv = new Object[]{"ID", "Otel İsmi","Oda Tipi", "Check-in", "Check-out", "Misafir TC",
+//                "Misafir İsim", "Misafir Numara", "Misafir Mail", "Yetişkin Misafir", "Çocuk Misafir", "Total Fiyat"};
+//        createTable(this.tmbl_reserv, this.tbl_emp_reserv, col_reserv, roomReservationRow);
+//    }
+
+
 
 
     private void loadHotelComponent() {
@@ -155,11 +160,12 @@ public class EmployeeView extends Layout{
                     this.fld_room_checkout.getText(),
                     this.fld_room_hotel_filter.getText(),
                     this.fld_room_city_filter.getText(),
-                    Integer.parseInt(fld_room_adult_filter.getText()),
+                    Integer.parseInt(this.fld_room_adult_filter.getText()),
                     Integer.parseInt(this.fld_room_child_filter.getText())
             );
-            ArrayList<Object[]> roomReservationRow = this.roomManager.getForTable(col_room.length, roomList);
-            loadBookingTable(roomReservationRow);
+            ArrayList<Object[]> roomReservationRow = this.roomManager.getForSearchedRoomTable(col_searched_room.length, roomList);
+            FilteredRoomView filteredRoomView = new FilteredRoomView();
+            filteredRoomView.loadSearchedRoomTable(roomReservationRow);
         });
     }
 

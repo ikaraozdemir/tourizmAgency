@@ -14,12 +14,12 @@ import java.util.ArrayList;
 
 public class ReservationDao {
     private Connection connection;
-    private RoomManager roomManager;
-    private HotelManager hotelManager;
+//    private RoomManager roomManager;
+//    private HotelManager hotelManager;
 
     public ReservationDao() {
-        this.roomManager = new RoomManager();
-        this.hotelManager = new HotelManager();
+//        this.roomManager = new RoomManager();
+//        this.hotelManager = new HotelManager();
         this.connection = Database.getInstance();
     }
 
@@ -72,8 +72,8 @@ public class ReservationDao {
         reservation.setTotalGuestCount(rs.getInt("reserv_total_guests"));
         reservation.setCheckinDate(rs.getDate("checkin_date").toLocalDate());
         reservation.setCheckOutDate(rs.getDate("checkout_date").toLocalDate());
-        reservation.setRoom(this.roomManager.getById(rs.getInt("reserv_room_id")));
-        reservation.setHotel(this.hotelManager.getById(rs.getInt("reserv_hotel_id")));
+//        reservation.setRoom(this.roomManager.getById(rs.getInt("reserv_room_id")));
+//        reservation.setHotel(this.hotelManager.getById(rs.getInt("reserv_hotel_id")));
         return reservation;
     }
 

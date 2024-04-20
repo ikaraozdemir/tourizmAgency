@@ -1,7 +1,6 @@
 package business;
 
 import core.Helper;
-import dao.PensionDao;
 import dao.ReservationDao;
 import dao.RoomDao;
 import dao.RoomFeatureDao;
@@ -9,14 +8,20 @@ import entity.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 public class RoomManager {
     private RoomDao roomDao;
     private ReservationDao reservationDao;
     private RoomFeatureDao roomFeatureDao;
+    private String checkOutDate;
+    private String checkInDate;
+    private int adult;
+    private int child;
 
     public RoomManager() {
         this.roomDao = new RoomDao();
@@ -32,8 +37,8 @@ public class RoomManager {
         return this.roomDao.findAll();
     }
 
-    public ArrayList<Room> getRoomsWithDetails() {
-        return this.roomDao.getRoomsWithDetails();
+    public ArrayList<Room> getRoomsWithDetails(Integer id) {
+        return this.roomDao.getRoomsWithDetails(id);
     }
 
     public boolean save(Room room) {
@@ -86,6 +91,48 @@ public class RoomManager {
         return roomObjList;
     }
 
+
+    public ArrayList<Object[]> getForSearchedRoomTable(int size, ArrayList<Room> roomList) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate dateIn = LocalDate.parse(checkInDate, formatter);
+        LocalDate dateOut = LocalDate.parse(checkOutDate, formatter);
+        long totalDays = ChronoUnit.DAYS.between(dateIn, dateOut);
+
+        ArrayList<Object[]> roomObjList = new ArrayList<>();
+        for (Room room :roomList) {
+            int i = 0;
+            int totalChildAdultPrice = adult * room.getPriceAdult() + child * room.getPriceChild();
+            Object[] rowObject = new Object[size];
+            rowObject[i++] = room.getRoomId();
+            rowObject[i++] = room.getHotel().getHotelName();
+            rowObject[i++] = room.getHotel().getHotelId();
+            rowObject[i++] = room.getSeason().getStrtDate();
+            rowObject[i++] = room.getSeason().getEndDate();
+            rowObject[i++] = room.getPension().getPensionType();
+            rowObject[i++] = room.getRoomStock();
+            rowObject[i++] = room.getType();
+
+            ArrayList<String> roomFeatureList = new ArrayList<>();
+            for (RoomFeature feature : room.getRoomFeatures()) {
+                for (Map.Entry<String, Object> entry : feature.getRoomFeature().entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    String keyValueString = key + ": " + value.toString();
+                    roomFeatureList.add(keyValueString);
+                }
+            }
+            rowObject[i++] = roomFeatureList;
+            rowObject[i++] = totalDays;
+            rowObject[i++] = room.getPriceAdult();
+            rowObject[i++] = room.getPriceChild();
+            rowObject[i++] = totalChildAdultPrice*totalDays;
+
+            roomObjList.add(rowObject);
+        }
+        return roomObjList;
+    }
+
     public int saveForId(Room room){
         return this.roomDao.saveForId(room);
     }
@@ -108,23 +155,26 @@ public class RoomManager {
         return this.roomDao.delete(roomId);
     }
     public ArrayList<Room> searchForReservation(String checkInDate, String checkOutDate, String hotelName, String hotelCity, int adult, int child ) {
-        String query = "SELECT FROM room r INNER JOIN season s  ON r.room_season_id = s.season_id INNER JOIN hotel h ON r.room_hotel_id = h.hotel_id;";
+
+        this.checkInDate = checkInDate;
+        this.checkOutDate = checkOutDate;
+        this.adult = adult;
+        this.child = child;
+
+        String query = "SELECT * FROM room r INNER JOIN season s  ON r.room_season_id = s.season_id INNER JOIN hotel h ON r.room_hotel_id = h.hotel_id ";
 
         ArrayList<String> where = new ArrayList<>();
         ArrayList<String> rezervOrWhere = new ArrayList<>();
 
         int total_guest = adult + child;
 
-
-
-//        checkIn = LocalDate.parse(checkIn, DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString();
-//        checkOut = LocalDate.parse(checkOut, DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString();
+        checkInDate = LocalDate.parse(checkInDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString();
+        checkOutDate = LocalDate.parse(checkOutDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString();
 
         if (checkInDate != null) where.add("s.season_start <= '" + checkInDate + "'");
-        if (checkOutDate != null) where.add("s.season_end >= '" + checkInDate + "'");
-        if (hotelCity != null) where.add("h.hotel_city = '" + hotelCity + "'");
-        if (hotelName != null) where.add("h.hotel_name = '" + hotelName + "'");
-        if (hotelName != null) where.add("h.hotel_name = '" + hotelName + "'");
+        if (checkOutDate != null) where.add("s.season_end >= '" + checkOutDate + "'");
+        if (!Objects.equals(hotelCity, "")) where.add("h.hotel_city = '" + hotelCity + "'");
+        if (!Objects.equals(hotelName, "")) where.add("h.hotel_name = '" + hotelName + "'");
 
         String whereStr = String.join(" AND ", where);
 
@@ -133,6 +183,14 @@ public class RoomManager {
         }
 
         ArrayList<Room> searchedRoomList = this.roomDao.selectByQuery(query);
+        ArrayList<Room> searchedRoomListUpdated = new ArrayList<>();
+        for(Room room: searchedRoomList) {
+           ArrayList<Room> roomsWithDetails0 = this.roomDao.getRoomsWithDetails(room.getRoomId());
+           searchedRoomListUpdated.add (roomsWithDetails0.get(0));
+        }
+        System.out.println(query);
+        System.out.println(searchedRoomListUpdated.isEmpty());
+
 
         rezervOrWhere.add("('" + checkInDate + "' BETWEEN checkin_date AND checkout_date)");
         rezervOrWhere.add("('" + checkOutDate + "' BETWEEN checkin_date AND checkout_date)");
@@ -148,26 +206,30 @@ public class RoomManager {
         for (Reservation reservation : reservList) {
             reservedRoomId.add(reservation.getReservRoomId());
         }
-        searchedRoomList.removeIf(room -> reservedRoomId.contains(room.getRoomId()));
+        searchedRoomListUpdated.removeIf(room -> reservedRoomId.contains(room.getRoomId()));
 
-        String roomFeaturequery = "SELECT rf.feature_name, rf.feature_value, rf.room_feature_room_id FROM public.room_features rf";
-        ArrayList<RoomFeature> roomFeatureList = this.roomFeatureDao.selectByQuery(roomFeaturequery);
-//        ArrayList<Integer> reservedRoomFeatureId = new ArrayList<>();
 
-        for (RoomFeature roomFeature : roomFeatureList) {
-           Object bedCount = roomFeature.getRoomFeature().get("[Oda Boyutu (metrekare):]");
-           if ((int)bedCount < total_guest) {
-               int roomIdBedNotEnough = roomFeature.getRoomFeatureRoomId();
-               searchedRoomList.removeIf(room -> reservedRoomId.contains(roomIdBedNotEnough));
+        for (Room room : searchedRoomListUpdated) {
+            System.out.println("girdii");
+//            ArrayList<Room> roomsWithDetails = this.roomDao.getRoomsWithDetails(room.getRoomId());
+//            for (Room roomWithDetails: roomsWithDetails){
+                for (RoomFeature roomFeature: room.getRoomFeatures()){
+                    if(Objects.equals(roomFeature.getRoomFeature().keySet().toString(), "[[Yatak Sayısı:]]")) {
+                        String str1 = roomFeature.getRoomFeature().values().toString();
+                        String str2 = str1.substring(2, str1.length() - 2);
+                        int bedCount = Integer.parseInt(str2);
+                        if (bedCount >= total_guest) {
+                            System.out.println(bedCount + " yatak sayısı, " + total_guest + " total misafir" );
+                            int roomIdBedNotEnough = room.getRoomId();
+                            searchedRoomListUpdated.removeIf(room2 -> reservedRoomId.contains(roomIdBedNotEnough));
+                        }
+                        System.out.println(str2);
+
+                    }
+//                }
             }
         }
-        searchedRoomList.removeIf(room -> reservedRoomId.contains(room.getRoomId()));
-
-
-        return searchedRoomList;
+        return searchedRoomListUpdated;
     }
-
-
-
 
 }

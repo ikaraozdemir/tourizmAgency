@@ -16,15 +16,15 @@ import java.util.regex.Pattern;
 
 
 public class RoomDao {
-    private SeasonManager seasonManager;
-    private PensionManager pensionManager;
-    private HotelManager hotelManager;
+//    private SeasonManager seasonManager;
+//    private PensionManager pensionManager;
+//    private HotelManager hotelManager;
     private Connection connection;
 
     public RoomDao() {
-        this.pensionManager = new PensionManager();
-        this.seasonManager = new SeasonManager();
-        this.hotelManager = new HotelManager();
+//        this.pensionManager = new PensionManager();
+//        this.seasonManager = new SeasonManager();
+//        this.hotelManager = new HotelManager();
         this.connection = Database.getInstance();
     }
 
@@ -37,8 +37,8 @@ public class RoomDao {
             ResultSet rs = pr.executeQuery();
             if (rs.next()) {
                 obj = this.match(rs);
-                obj.setSeason(this.seasonManager.getById(obj.getRoomSeasonId()));
-                obj.setPension(this.pensionManager.getById(obj.getRoomPensionId()));
+//                obj.setSeason(this.seasonManager.getById(obj.getRoomSeasonId()));
+//                obj.setPension(this.pensionManager.getById(obj.getRoomPensionId()));
             }
 
         } catch (SQLException e) {
@@ -146,8 +146,12 @@ public class RoomDao {
         return generatedId;
     }
 
-    public ArrayList<Room> getRoomsWithDetails() {
+    public ArrayList<Room> getRoomsWithDetails(int id) {
         ArrayList<Room> rooms = new ArrayList<>();
+        String queryWhere = "";
+        if(id != -1) {
+            queryWhere = " WHERE room_id = " + id;
+        }
 
         String query = "SELECT " +
                 "r.room_id, " +
@@ -170,8 +174,9 @@ public class RoomDao {
                 "INNER JOIN season s ON r.room_season_id = s.season_id " +
                 "INNER JOIN pension p ON r.room_pension_id = p.pension_id " +
                 "LEFT JOIN room_features rf ON r.room_id = rf.room_feature_room_id " +
-                "GROUP BY r.room_id, h.hotel_id, h.hotel_name, s.season_id, s.season_name, p.pension_id, p.pension_types";
-
+                queryWhere +
+                " GROUP BY r.room_id, h.hotel_id, h.hotel_name, s.season_id, s.season_name, p.pension_id, p.pension_types";
+        System.out.println(query);
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
             ResultSet rs = pr.executeQuery();
@@ -257,9 +262,9 @@ public class RoomDao {
         room.setPriceAdult(rs.getInt("prc_for_adult"));
         room.setPriceChild(rs.getInt("prc_for_child"));
         room.setType(Room.Type.valueOf(rs.getString("room_type")));
-        room.setHotel(this.hotelManager.getById(rs.getInt("room_hotel_id")));
-        room.setSeason(this.seasonManager.getById(rs.getInt("room_season_id")));
-        room.setPension(this.pensionManager.getById(rs.getInt("room_pension_id")));
+//        room.setHotel(this.hotelManager.getById(rs.getInt("room_hotel_id")));
+//        room.setSeason(this.seasonManager.getById(rs.getInt("room_season_id")));
+//        room.setPension(this.pensionManager.getById(rs.getInt("room_pension_id")));
         return room;
     }
 

@@ -102,9 +102,6 @@ public class RoomFeatureDao {
         RoomFeature roomFeature= new RoomFeature();
         roomFeature.setRoomFeatureId(rs.getInt("room_feature_id"));
         roomFeature.setRoomFeatureRoomId(rs.getInt("room_feature_room_id"));
-//        roomFeature.setFeatureName(rs.getString("feature_name"));
-//        roomFeature.setFeatureValue(rs.getString("feature_value"));
-
         return roomFeature;
     }
 

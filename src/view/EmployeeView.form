@@ -230,7 +230,7 @@
                           </grid>
                         </constraints>
                         <properties>
-                          <text value="roo"/>
+                          <text value=""/>
                         </properties>
                       </component>
                       <component id="cd732" class="javax.swing.JLabel">
@@ -294,7 +294,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="fcf22" class="javax.swing.JTable" binding="table2" default-binding="true">
+                      <component id="fcf22" class="javax.swing.JTable" binding="tbl_emp_reserv">
                         <constraints/>
                         <properties/>
                       </component>
