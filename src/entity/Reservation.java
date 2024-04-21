@@ -16,7 +16,6 @@ public class Reservation {
     private int totalPrice;
     private String reservNote;
     private int totalDayCount;
-    private int totalGuestCount;
     private LocalDate checkinDate;
     private LocalDate checkOutDate;
     private Room room;
@@ -121,14 +120,6 @@ public class Reservation {
         this.totalDayCount = totalDayCount;
     }
 
-    public int getTotalGuestCount() {
-        return totalGuestCount;
-    }
-
-    public void setTotalGuestCount(int totalGuestCount) {
-        this.totalGuestCount = totalGuestCount;
-    }
-
     public LocalDate getCheckinDate() {
         return checkinDate;
     }
@@ -176,7 +167,6 @@ public class Reservation {
                 ", totalPrice=" + totalPrice +
                 ", reservNote='" + reservNote + '\'' +
                 ", totalDayCount=" + totalDayCount +
-                ", totalGuestCount=" + totalGuestCount +
                 ", checkinDate=" + checkinDate +
                 ", checkOutDate=" + checkOutDate +
                 ", room=" + room +

@@ -3,13 +3,11 @@ package dao;
 import business.HotelManager;
 import business.RoomManager;
 import core.Database;
+import entity.Hotel;
 import entity.Reservation;
 import entity.Room;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class ReservationDao {
@@ -57,6 +55,46 @@ public class ReservationDao {
         return rooms;
     }
 
+    public boolean save(Reservation reservation) {
+        String query = "INSERT INTO public.reservation " +
+                "(" +
+                "reserv_room_id," +
+                "adult_guest_count," +
+                "child_guest_count," +
+                "reserv_guest_idno," +
+                "reserv_guest_name," +
+                "reserv_guest_mpno," +
+                "reserv_guest_mail," +
+                "reserv_total_prc," +
+                "reserv_note," +
+                "checkin_date," +
+                "checkout_date," +
+                "reserv_hotel_id" +
+                ")" +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+
+            pr.setInt(1, reservation.getReservRoomId());
+            pr.setInt(2, reservation.getAdultCount());
+            pr.setInt(3, reservation.getChildCount());
+            pr.setString(4, reservation.getGuestIdno());
+            pr.setString(5, reservation.getGuestName());
+            pr.setString(6, reservation.getGuestMpno());
+            pr.setString(7, reservation.getGuestMail());
+            pr.setInt(8, reservation.getTotalPrice());
+            pr.setString(9, reservation.getReservNote());
+            pr.setDate(10, Date.valueOf(reservation.getCheckinDate()));
+            pr.setDate(11, Date.valueOf(reservation.getCheckOutDate()));
+            pr.setInt(12, reservation.getHotel().getHotelId());
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public Reservation match(ResultSet rs) throws SQLException {
         Reservation reservation = new Reservation();
         reservation.setReservId(rs.getInt("reserv_id"));
@@ -65,13 +103,14 @@ public class ReservationDao {
         reservation.setChildCount(rs.getInt("child_guest_count"));
         reservation.setGuestIdno(rs.getString("reserv_guest_idno"));
         reservation.setGuestMpno(rs.getString("reserv_guest_mpno"));
+        reservation.setGuestName(rs.getString("reserv_guest_name"));
         reservation.setGuestMail(rs.getString("reserv_guest_mail"));
         reservation.setTotalPrice(rs.getInt("reserv_total_prc"));
         reservation.setReservNote(rs.getString("reserv_note"));
         reservation.setTotalDayCount(rs.getInt("reserv_total_days"));
-        reservation.setTotalGuestCount(rs.getInt("reserv_total_guests"));
         reservation.setCheckinDate(rs.getDate("checkin_date").toLocalDate());
         reservation.setCheckOutDate(rs.getDate("checkout_date").toLocalDate());
+        reservation.setReservHotelId(rs.getInt("reserv_hotel_id"));
 //        reservation.setRoom(this.roomManager.getById(rs.getInt("reserv_room_id")));
 //        reservation.setHotel(this.hotelManager.getById(rs.getInt("reserv_hotel_id")));
         return reservation;

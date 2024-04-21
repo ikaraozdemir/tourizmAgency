@@ -1,7 +1,14 @@
 package view;
 
+import business.RoomManager;
+import core.Helper;
+import entity.Room;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 public class FilteredRoomView extends Layout{
@@ -10,10 +17,24 @@ public class FilteredRoomView extends Layout{
     private JScrollPane scrol;
     private Object[] col_searched_room;
     private final DefaultTableModel tmbl_searched_room = new DefaultTableModel();
+    private JPopupMenu searched_room_menu;
+    private RoomManager roomManager;
+    private String adult;
+    private String child;
+    private String checkIn;
+    private String checkOut;
 
-    public FilteredRoomView () {
+
+
+    public FilteredRoomView (String adult, String child, String checkIn, String checkOut) {
         this.add(container);
         this.guiInitialize(700, 700);
+        this.roomManager = new RoomManager();
+        this.adult = adult;
+        this.child = child;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+
 
     }
 
@@ -22,4 +43,36 @@ public class FilteredRoomView extends Layout{
                 "Oda Stoğu", "Oda Tipi", "Oda Özellikleri", "Toplam Gün", "Yetişkin İçin Fiyat", "Çocuk İçin Fiyat", "Toplam Fiyat"};
         createTable(this.tmbl_searched_room, this.tbl_searched_room, col_searched_room, roomReservationRow);
     }
+
+    public void loadSearchedRoomComponent(ArrayList<Room> rooms) {
+        tableRowSelect(this.tbl_searched_room);
+        this.searched_room_menu = new JPopupMenu();
+        this.searched_room_menu.add("Rezervasyon Yap").addActionListener(e -> {
+            int selectSeearchedRoomId = this.getTableSelectedRow(tbl_searched_room,0);
+            ReservationView reservationView = null;
+
+            for (Room room : rooms) {
+                if (room.getRoomId() == selectSeearchedRoomId) {
+                    reservationView = new ReservationView(room, adult, child, checkIn, checkOut);
+
+                }
+            }
+
+
+            reservationView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    EmployeeView employeeView = new EmployeeView();
+                    employeeView.loadRezervationTable();
+
+                }
+            });
+        });
+        this.tbl_searched_room.setComponentPopupMenu(searched_room_menu);
+
+
+    }
+
+
+
 }

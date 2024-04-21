@@ -9,10 +9,7 @@ import entity.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class RoomManager {
     private RoomDao roomDao;
@@ -22,11 +19,15 @@ public class RoomManager {
     private String checkInDate;
     private int adult;
     private int child;
+    private int totalPrice;
+    private int totalDays;
+    private HotelManager hotelManager;
 
     public RoomManager() {
         this.roomDao = new RoomDao();
         this.reservationDao = new ReservationDao();
         this.roomFeatureDao = new RoomFeatureDao();
+        this.hotelManager = new HotelManager();
     }
 
     public Room getById(int id) {
@@ -98,11 +99,14 @@ public class RoomManager {
         LocalDate dateIn = LocalDate.parse(checkInDate, formatter);
         LocalDate dateOut = LocalDate.parse(checkOutDate, formatter);
         long totalDays = ChronoUnit.DAYS.between(dateIn, dateOut);
+        this.totalDays = (int) totalDays;
 
         ArrayList<Object[]> roomObjList = new ArrayList<>();
         for (Room room :roomList) {
             int i = 0;
             int totalChildAdultPrice = adult * room.getPriceAdult() + child * room.getPriceChild();
+            int totalPrice = (int) (totalChildAdultPrice * totalDays);
+            this.totalPrice = totalPrice;
             Object[] rowObject = new Object[size];
             rowObject[i++] = room.getRoomId();
             rowObject[i++] = room.getHotel().getHotelName();
@@ -126,7 +130,7 @@ public class RoomManager {
             rowObject[i++] = totalDays;
             rowObject[i++] = room.getPriceAdult();
             rowObject[i++] = room.getPriceChild();
-            rowObject[i++] = totalChildAdultPrice*totalDays;
+            rowObject[i++] = totalPrice;
 
             roomObjList.add(rowObject);
         }
@@ -184,13 +188,11 @@ public class RoomManager {
 
         ArrayList<Room> searchedRoomList = this.roomDao.selectByQuery(query);
         ArrayList<Room> searchedRoomListUpdated = new ArrayList<>();
+
         for(Room room: searchedRoomList) {
-           ArrayList<Room> roomsWithDetails0 = this.roomDao.getRoomsWithDetails(room.getRoomId());
+           ArrayList<Room> roomsWithDetails0 = this.getRoomsWithDetails(room.getRoomId());
            searchedRoomListUpdated.add (roomsWithDetails0.get(0));
         }
-        System.out.println(query);
-        System.out.println(searchedRoomListUpdated.isEmpty());
-
 
         rezervOrWhere.add("('" + checkInDate + "' BETWEEN checkin_date AND checkout_date)");
         rezervOrWhere.add("('" + checkOutDate + "' BETWEEN checkin_date AND checkout_date)");
@@ -209,27 +211,79 @@ public class RoomManager {
         searchedRoomListUpdated.removeIf(room -> reservedRoomId.contains(room.getRoomId()));
 
 
-        for (Room room : searchedRoomListUpdated) {
-            System.out.println("girdii");
-//            ArrayList<Room> roomsWithDetails = this.roomDao.getRoomsWithDetails(room.getRoomId());
-//            for (Room roomWithDetails: roomsWithDetails){
-                for (RoomFeature roomFeature: room.getRoomFeatures()){
-                    if(Objects.equals(roomFeature.getRoomFeature().keySet().toString(), "[[Yatak Sayısı:]]")) {
-                        String str1 = roomFeature.getRoomFeature().values().toString();
-                        String str2 = str1.substring(2, str1.length() - 2);
-                        int bedCount = Integer.parseInt(str2);
-                        if (bedCount >= total_guest) {
-                            System.out.println(bedCount + " yatak sayısı, " + total_guest + " total misafir" );
-                            int roomIdBedNotEnough = room.getRoomId();
-                            searchedRoomListUpdated.removeIf(room2 -> reservedRoomId.contains(roomIdBedNotEnough));
-                        }
-                        System.out.println(str2);
+        List<Room> roomsToRemove = new ArrayList<>();
 
+        for (Room room : searchedRoomListUpdated) {
+            for (RoomFeature roomFeature : room.getRoomFeatures()) {
+                if (Objects.equals(roomFeature.getRoomFeature().keySet().toString(), "[[Yatak Sayısı:]]")) {
+                    String str1 = roomFeature.getRoomFeature().values().toString();
+                    String str2 = str1.substring(2, str1.length() - 2);
+                    int bedCount = Integer.parseInt(str2);
+                    if (bedCount < total_guest) {
+                        System.out.println(bedCount + " yatak sayısı, " + total_guest + " total misafir");
+                        // Silinecek odaların referanslarını listeye ekleyin
+                        roomsToRemove.add(room);
                     }
-//                }
+                }
             }
         }
+
+// Silinecek odaların referanslarını listeden kaldırın
+        searchedRoomListUpdated.removeAll(roomsToRemove);
+
+        for (Room room: searchedRoomListUpdated) {
+            System.out.println(room.getHotel().getHotelFeatures() + " searchedRoomList roomManager");
+
+        }
+
         return searchedRoomListUpdated;
     }
 
+    public String getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(String checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+
+    public String getCheckInDate() {
+        return checkInDate;
+    }
+
+    public void setCheckInDate(String checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public int getAdult() {
+        return adult;
+    }
+
+    public void setAdult(int adult) {
+        this.adult = adult;
+    }
+
+    public int getChild() {
+        return child;
+    }
+
+    public void setChild(int child) {
+        this.child = child;
+    }
+
+    public int getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public int getTotalDays() {
+        return totalDays;
+    }
+
+    public void setTotalDays(int totalDays) {
+        this.totalDays = totalDays;
+    }
 }

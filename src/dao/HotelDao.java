@@ -44,7 +44,7 @@ public class HotelDao {
                 "LEFT JOIN pension ON hotel.hotel_id = pension.pension_hotel_id " +
                 "LEFT JOIN hotel_features ON hotel.hotel_id = hotel_features.hotel_features_hotel_id " +
                 "LEFT JOIN season ON hotel.hotel_id = season.season_hotel_id " +
-                        " WHERE hotel_id = ? " +
+                " WHERE hotel_id = ? " +
                 "GROUP BY hotel.hotel_id;";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
@@ -52,6 +52,7 @@ public class HotelDao {
             ResultSet rs = pr.executeQuery();
             if (rs.next()) {
                 hotel = this.match(rs);
+                System.out.println(hotel.getHotelName() + "get By ID içinde ");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -64,6 +65,7 @@ public class HotelDao {
     }
 
     public ArrayList<Hotel> findHotelsWithFeatures() {
+
         return this.selectByQuery(
                 "SELECT hotel.*, " +
                 "ARRAY_AGG(DISTINCT pension.pension_types) AS pension_types, " +
@@ -73,16 +75,18 @@ public class HotelDao {
                 "LEFT JOIN pension ON hotel.hotel_id = pension.pension_hotel_id " +
                 "LEFT JOIN hotel_features ON hotel.hotel_id = hotel_features.hotel_features_hotel_id " +
                 "LEFT JOIN season ON hotel.hotel_id = season.season_hotel_id " +
-                "GROUP BY hotel.hotel_id;");
+
+                " GROUP BY hotel.hotel_id;"
+        );
     }
 
     public ArrayList<Hotel> selectByQuery(String query) {
+        System.out.println(query + "####");
         ArrayList<Hotel> hotelList = new ArrayList<>();
         try {
             ResultSet rs = this.connection.createStatement().executeQuery(query);
             while (rs.next()) {
                 hotelList.add(this.match(rs));
-//                System.out.println(hotelList.get(0).getPensionTypes().get(1).getPensionType());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -257,5 +261,6 @@ public class HotelDao {
 
         return hotel;
     }
+
 }
 

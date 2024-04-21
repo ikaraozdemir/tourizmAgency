@@ -105,4 +105,21 @@ public class Hotel {
     public void setHotelFeatures(ArrayList<HotelFeature> hotelFeatures) {
         this.hotelFeatures = hotelFeatures;
     }
+
+    @Override
+    public String toString() {
+        return "Hotel{" +
+                "hotelId=" + hotelId +
+                ", city='" + city + '\'' +
+                ", region='" + region + '\'' +
+                ", hotelName='" + hotelName + '\'' +
+                ", hotelPhno='" + hotelPhno + '\'' +
+                ", hotelMail='" + hotelMail + '\'' +
+                ", star='" + star + '\'' +
+                ", hotelAddress='" + hotelAddress + '\'' +
+                ", seasons=" + seasons +
+                ", pensionTypes=" + pensionTypes +
+                ", hotelFeatures=" + hotelFeatures +
+                '}';
+    }
 }

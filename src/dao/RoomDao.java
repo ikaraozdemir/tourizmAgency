@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class RoomDao {
 //    private SeasonManager seasonManager;
 //    private PensionManager pensionManager;
-//    private HotelManager hotelManager;
+    private HotelManager hotelManager;
     private Connection connection;
 
     public RoomDao() {
@@ -26,6 +26,7 @@ public class RoomDao {
 //        this.seasonManager = new SeasonManager();
 //        this.hotelManager = new HotelManager();
         this.connection = Database.getInstance();
+        this.hotelManager = new HotelManager();
     }
 
     public Room getById(int id) {
@@ -176,7 +177,7 @@ public class RoomDao {
                 "LEFT JOIN room_features rf ON r.room_id = rf.room_feature_room_id " +
                 queryWhere +
                 " GROUP BY r.room_id, h.hotel_id, h.hotel_name, s.season_id, s.season_name, p.pension_id, p.pension_types";
-        System.out.println(query);
+//        System.out.println(query);
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
             ResultSet rs = pr.executeQuery();
@@ -188,10 +189,16 @@ public class RoomDao {
                 room.setPriceChild(rs.getInt("prc_for_child"));
                 room.setType(Room.Type.valueOf(rs.getString("room_type")));
 
+
+                System.out.println(rs.getInt("hotel_id") + "&&&&&&&&");
                 Hotel hotel = new Hotel();
                 hotel.setHotelName(rs.getString("hotel_name"));
                 hotel.setHotelId(rs.getInt("hotel_id"));
+                System.out.println(hotel.getHotelName());
+                hotel = this.hotelManager.getById(hotel.getHotelId());
+                System.out.println(hotel.getHotelFeatures().isEmpty() + "feature listesi boş mu?");
                 room.setHotel(hotel);
+
 
                 Season season = new Season();
                 season.setSeasonName(rs.getString("season_name"));
