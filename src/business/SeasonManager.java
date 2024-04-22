@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 public class SeasonManager {
     private final SeasonDao seasonDao;
+    private HotelManager hotelManager = new HotelManager();
 
     public SeasonManager() {
         this.seasonDao = new SeasonDao();
@@ -59,6 +60,7 @@ public class SeasonManager {
             int i = 0;
             Object[] rowObject = new Object[size];
             rowObject[i++] = season.getSeasonId();
+            rowObject[i++] = this.hotelManager.getById(season.getSeasonHotelId()).getHotelName();
             rowObject[i++] = season.getStrtDate();
             rowObject[i++] = season.getEndDate();
             rowObject[i++] = season.getSeasonName();

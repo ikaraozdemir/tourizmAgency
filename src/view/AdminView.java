@@ -12,9 +12,6 @@ public class AdminView extends Layout{
     private JPanel container;
     private JButton btn_user_logout;
     private JTabbedPane tabbedPane1;
-    private JTextField fld_user_role;
-    private JButton btn_user_clear;
-    private JButton btn_user_search;
     private JTable tbl_users;
     private JLabel lbl_welcome;
     private User user;
@@ -32,7 +29,11 @@ public class AdminView extends Layout{
         }
         this.lbl_welcome.setText("Hoşgeldiniz " + this.user.getName());
         loadUserTable();
-//        loadUserComponent();
+        loadUserComponent();
+
+        loadComponent();
+
+
     }
 
     public void loadUserTable() {
@@ -41,45 +42,49 @@ public class AdminView extends Layout{
         createTable(this.tmbl_users, this.tbl_users, col_user, userList);
     }
 
-//    private void loadUserComponent() {
-//        tableRowSelect(this.tbl_users);
-//
-//        this.car_menu = new JPopupMenu();
-//        this.car_menu.add("Yeni").addActionListener(e -> {
-//            CarView carView = new CarView(new Car());
-//            carView.addWindowListener(new WindowAdapter() {
-//                @Override
-//                public void windowClosed(WindowEvent e) {
-//                    loadCarTable();
-//
-//                }
-//            });
-//        });
-//
-//        this.car_menu.add("Güncelle").addActionListener(e -> {
-//            int selectCarId = this.getTableSelectedRow(tbl_car,0);
-//            CarView carView = new CarView(this.carManager.getById(selectCarId));
-//            carView.addWindowListener(new WindowAdapter() {
-//                @Override
-//                public void windowClosed(WindowEvent e) {
-//                    loadCarTable();
-//
-//                }
-//            });
-//        });
-//        this.car_menu.add("Sil").addActionListener(e -> {
-//            if (Helper.confirm("sure")){
-//                int selectCartId = this.getTableSelectedRow(tbl_car,0);
-//                if (this.carManager.delete(selectCartId)){
-//                    Helper.showMsg("done");
-//                    loadCarTable();
-//                }else{
-//                    Helper.showMsg("error");
-//                }
-//            }
-//        });
-//        this.tbl_car.setComponentPopupMenu(car_menu);
-//    }
+    private void loadUserComponent() {
+        tableRowSelect(this.tbl_users);
+        JPopupMenu user_menu = new JPopupMenu();
 
+        user_menu.add("Yeni").addActionListener(e -> {
+            UserView userView = new UserView(new User());
+            userView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadUserTable();
+                }
+            });
+        });
 
+        user_menu.add("Güncelle").addActionListener(e -> {
+            int selectedUserId = this.getTableSelectedRow(tbl_users,0);
+            UserView userView = new UserView(this.userManager.getById(selectedUserId));
+            userView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadUserTable();
+
+                }
+            });
+        });
+        user_menu.add("Sil").addActionListener(e -> {
+            if (Helper.confirm("sure")){
+                int selectUsertId = this.getTableSelectedRow(tbl_users,0);
+                if (this.userManager.delete(selectUsertId)){
+                    Helper.showMessage("done");
+                    loadUserTable();
+                }else{
+                    Helper.showMessage("error");
+                }
+            }
+        });
+        this.tbl_users.setComponentPopupMenu(user_menu);
+    }
+
+    private void loadComponent () {
+        this.btn_user_logout.addActionListener(e -> {
+            dispose();
+            LoginView loginView = new LoginView();
+        });
+    }
 }

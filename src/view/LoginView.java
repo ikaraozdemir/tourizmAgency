@@ -5,6 +5,7 @@ import core.Helper;
 import entity.User;
 
 import javax.swing.*;
+import java.util.Objects;
 
 public class LoginView extends Layout {
 
@@ -24,12 +25,13 @@ public class LoginView extends Layout {
                 Helper.showMessage("fill");
             } else {
                 User loginUser = this.userManager.findByLogin(this.fld_username.getText(), this.fld_pw.getText());
-                if (loginUser == null) {
+                System.out.println(loginUser.getRole());
+                if (loginUser.getId() == 0) {
                     Helper.showMessage("notFound");
-                } else if (loginUser.getRole().equals("admin")) {
+                } else if (loginUser.getRole().toString().equals("ADMIN")) {
                     AdminView adminView = new AdminView(loginUser);
                     dispose();
-                }else if (loginUser.getRole().equals("employee")) {
+                }else if (loginUser.getRole().toString().equals("EMPLOYEE")) {
                     EmployeeView employeeView = new EmployeeView(loginUser);
                     dispose();
                 }

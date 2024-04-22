@@ -1,7 +1,6 @@
 package view;
 
 import business.RoomManager;
-import core.Helper;
 import entity.Reservation;
 import entity.Room;
 
@@ -9,7 +8,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 public class FilteredRoomView extends Layout{
@@ -61,7 +59,7 @@ public class FilteredRoomView extends Layout{
                     @Override
                     public void windowClosed(WindowEvent e) {
                         EmployeeView employeeView = new EmployeeView();
-                        employeeView.loadRezervationTable();
+                        employeeView.loadReservationTable();
                     }
                 });
             }

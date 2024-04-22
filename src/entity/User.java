@@ -2,18 +2,24 @@ package entity;
 
 public class User {
     private int id;
-    private String role;
+    private Role role;
     private String name;
     private String password;
 
     public User() {
     }
 
-    public User(int id, String role, String name, String password) {
+    public User(int id, Role role, String name, String password) {
         this.id = id;
         this.role = role;
         this.name = name;
         this.password = password;
+    }
+
+
+    public enum Role {
+        ADMIN,
+        EMPLOYEE
     }
 
     public int getId() {
@@ -24,11 +30,11 @@ public class User {
         this.id = id;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
@@ -52,7 +58,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", role='" + role + '\'' +
+                ", role=" + role +
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 '}';

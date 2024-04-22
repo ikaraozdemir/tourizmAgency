@@ -58,9 +58,15 @@ public class RoomFeatureDao {
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
 
+            String featureKey = roomFeature.getRoomFeature().keySet().toString();
+            String featureKeyCleaned =  featureKey.substring(1, featureKey.length() - 1);
+
+            String featureValue = roomFeature.getRoomFeature().values().toString();
+            String featureValueCleaned =  featureValue.substring(1, featureValue.length() - 1);
+
             pr.setInt(1, roomFeature.getRoomFeatureRoomId());
-            pr.setString(2, roomFeature.getRoomFeature().keySet().toString());
-            pr.setString(3,roomFeature.getRoomFeature().values().toString());
+            pr.setString(2, featureKeyCleaned);
+            pr.setString(3,featureValueCleaned);
             pr.executeUpdate();
 
             return true;
@@ -82,11 +88,8 @@ public class RoomFeatureDao {
             while (rs.next()) {
                 RoomFeature feature = new RoomFeature();
                 feature.setRoomFeatureId(rs.getInt("room_feature_id"));
-//                System.out.println(feature.getHotelFeatureId());
                 feature.setRoomFeatureRoomId(rs.getInt("room_feature_room_id"));
-//                System.out.println(feature.getHotelFeature());
                 feature.addRoomFeature(rs.getString("feature_name"),rs.getString("feature_value"));
-//                System.out.println(feature.getHotelFeatureHotelId());
                 selectedFeatures.add(feature);
             }
         } catch (SQLException e) {

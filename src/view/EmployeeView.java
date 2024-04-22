@@ -46,9 +46,6 @@ public class EmployeeView extends Layout{
     private Object[] col_season;
     private Object[] col_room;
     private Object[] col_reserv;
-    private JPopupMenu hotel_menu;
-    private JPopupMenu room_menu;
-    private JPopupMenu reserv_menu;
     private Object[] col_searched_room = new Object[]{"ID", "Otel","Otel ID", "Sezon Başlangıcı", "Sezon Bitişi", "Pansiyon Tipi",
             "Oda Stoğu", "Oda Tipi", "Oda Özellikleri", "Toplam Gün", "Yetişkin İçin Fiyat", "Çocuk İçin Fiyat", "Toplam Fiyat"};
     private String checkIn;
@@ -82,21 +79,37 @@ public class EmployeeView extends Layout{
         this.user = user;
         this.add(container);
         this.guiInitialize(1000,500);
+
+
+        this.fld_room_checkin.setText("01/01/2024");
+        this.fld_room_checkout.setText("01/01/2024");
+
         if (this.user == null) {
             dispose();
         }
         this.lbl_hotel_welcome.setText("Hoşgeldiniz " + this.user.getName());
+
         loadHotelTable();
         loadHotelComponent();
 
         loadSeasonTable();
+        loadSeasonComponent();
+
         loadRoomTable();
         loadRoomComponent();
 
-        loadRezervationTable();
+        loadReservationTable();
         loadReservationComponent();
+
+        loadComponent();
     }
 
+    private void loadComponent () {
+        this.btn_emp_logout.addActionListener(e -> {
+            dispose();
+            LoginView loginView = new LoginView();
+        });
+    }
     public void loadHotelTable() {
         this.col_hotel = new Object[]{"ID", "Şehir", "Bölge", "İsim", "Sabit Telefon", "Mail", "Yıldız Sayısı",
                 "Adres", "Pansiyon Tipleri", "Tesis Özellikleri",  "Sezonlar" };
@@ -105,10 +118,11 @@ public class EmployeeView extends Layout{
     }
 
     public void loadSeasonTable() {
-        this.col_season = new Object[]{"ID", "Sezon Başlangıcı", "Sezon Bitişi", "Sezon İsmi"};
+        this.col_season = new Object[]{"ID", "Otel", "Sezon Başlangıcı", "Sezon Bitişi", "Sezon İsmi"};
         ArrayList<Object[]> seasonList = this.seasonManager.getForTable(col_season.length, this.seasonManager.findAll());
         createTable(this.tmbl_seasons, this.tbl_emp_seasons, col_season, seasonList);
     }
+
 
     public void loadRoomTable() {
         this.col_room = new Object[]{"ID", "Otel","Otel ID", "Sezon Başlangıcı", "Sezon Bitişi", "Pansiyon Tipi",
@@ -119,7 +133,7 @@ public class EmployeeView extends Layout{
         createTable(this.tmbl_rooms, this.tbl_emp_rooms, col_room, roomList);
     }
 
-    public void loadRezervationTable() {
+    public void loadReservationTable() {
         this.col_reserv = new Object[]{"ID", "Otel İsmi","Oda Tipi", "Check-in", "Check-out", "Misafir TC No",
                 "Misafir İsim", "Misafir Numara", "Misafir Mail", "Yetişkin Misafir", "Çocuk Misafir", "Total Fiyat"};
         ArrayList<Object[]> reservList = this.reservationManager.getForTable(col_reserv.length, this.reservationManager.findAll());
@@ -132,8 +146,8 @@ public class EmployeeView extends Layout{
     private void loadHotelComponent() {
         tableRowSelect(this.tbl_emp_hotels);
 
-        this.hotel_menu = new JPopupMenu();
-        this.hotel_menu.add("Yeni").addActionListener(e -> {
+        JPopupMenu hotel_menu = new JPopupMenu();
+        hotel_menu.add("Yeni").addActionListener(e -> {
             HotelView hotelView = new HotelView(new Hotel());
             hotelView.addWindowListener(new WindowAdapter() {
                 @Override
@@ -143,7 +157,7 @@ public class EmployeeView extends Layout{
             });
         });
 
-       this.hotel_menu.add("Güncelle").addActionListener(e -> {
+       hotel_menu.add("Güncelle").addActionListener(e -> {
             int selectHotelId = this.getTableSelectedRow(tbl_emp_hotels,0);
             HotelView hotelView = new HotelView(this.hotelManager.getById(selectHotelId));
            hotelView.addWindowListener(new WindowAdapter() {
@@ -155,7 +169,7 @@ public class EmployeeView extends Layout{
                 }
             });
        });
-        this.hotel_menu.add("Sil").addActionListener(e -> {
+        hotel_menu.add("Sil").addActionListener(e -> {
             if (Helper.confirm("sure")){
                 int selectHoteltId = this.getTableSelectedRow(tbl_emp_hotels,0);
                 if (this.hotelManager.delete(selectHoteltId) &&
@@ -170,7 +184,7 @@ public class EmployeeView extends Layout{
             }
         });
 
-        this.hotel_menu.add("Oda Ekle").addActionListener(e -> {
+        hotel_menu.add("Oda Ekle").addActionListener(e -> {
             int selectHotelId = this.getTableSelectedRow(tbl_emp_hotels,0);
             RoomView roomView = new RoomView(new Room(),this.hotelManager.getById(selectHotelId));
             roomView.addWindowListener(new WindowAdapter() {
@@ -211,11 +225,32 @@ public class EmployeeView extends Layout{
         });
     }
 
+    private void loadSeasonComponent() {
+        tableRowSelect(this.tbl_emp_seasons);
+        JPopupMenu season_menu = new JPopupMenu();
+
+        season_menu.add("Sil").addActionListener(e -> {
+            if (Helper.confirm("sure")) {
+                int selectSeasonId = this.getTableSelectedRow(tbl_emp_seasons, 0);
+                if (this.seasonManager.delete(selectSeasonId)){
+                    Helper.showMessage("done");
+                    loadSeasonTable();
+                } else {
+                    Helper.showMessage("error");
+                }
+            }
+        });
+
+        this.tbl_emp_seasons.setComponentPopupMenu(season_menu);
+
+    }
+
+
     private void loadRoomComponent() {
         tableRowSelect(this.tbl_emp_rooms);
-        this.room_menu = new JPopupMenu();
+        JPopupMenu room_menu = new JPopupMenu();
 
-        this.room_menu.add("Güncelle").addActionListener(e -> {
+        room_menu.add("Güncelle").addActionListener(e -> {
 
             int selectHotelId = this.getTableSelectedRow(tbl_emp_rooms, 2);
             int selectRoomId = this.getTableSelectedRow(tbl_emp_rooms, 0);
@@ -229,7 +264,7 @@ public class EmployeeView extends Layout{
                 }
             });
         });
-        this.room_menu.add("Sil").addActionListener(e -> {
+        room_menu.add("Sil").addActionListener(e -> {
             if (Helper.confirm("sure")) {
                 int selectRoomId = this.getTableSelectedRow(tbl_emp_rooms, 0);
                 if (this.roomManager.delete(selectRoomId) &&
@@ -248,9 +283,9 @@ public class EmployeeView extends Layout{
 
     private void loadReservationComponent(){
         tableRowSelect(this.tbl_emp_reserv);
-        this.reserv_menu = new JPopupMenu();
+        JPopupMenu reserv_menu = new JPopupMenu();
 
-        this.reserv_menu.add("Güncelle").addActionListener(e -> {
+        reserv_menu.add("Güncelle").addActionListener(e -> {
 
 
             int selectReservId = this.getTableSelectedRow(tbl_emp_reserv, 0);
@@ -269,12 +304,12 @@ public class EmployeeView extends Layout{
             reservationView.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    loadRezervationTable();
+                    loadReservationTable();
 
                 }
             });
         });
-        this.reserv_menu.add("Sil").addActionListener(e -> {
+        reserv_menu.add("Sil").addActionListener(e -> {
             if (Helper.confirm("sure")) {
                 int selectReservId = this.getTableSelectedRow(tbl_emp_reserv, 0);
                 if (this.reservationManager.delete(selectReservId)){

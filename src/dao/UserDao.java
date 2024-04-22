@@ -1,6 +1,7 @@
 package dao;
 
 import core.Database;
+import entity.Season;
 import entity.User;
 
 import java.sql.*;
@@ -16,10 +17,23 @@ public class UserDao {
     public User match(ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("user_id"));
-        user.setRole(rs.getString("user_role"));
+        user.setRole(User.Role.valueOf((rs.getString("user_role"))));
         user.setName(rs.getString("user_name"));
         user.setPassword(rs.getString("user_pw"));
         return user;
+    }
+    public User getById(int id) {
+        User obj = null;
+        String query = "SELECT * FROM public.user WHERE user_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, id);
+            ResultSet rs = pr.executeQuery();
+            if (rs.next()) obj = this.match(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return obj;
     }
 
     public ArrayList<User> findAll() {
@@ -54,4 +68,60 @@ public class UserDao {
         return user;
     }
 
+    public boolean save(User user) {
+        String query = "INSERT INTO public.user (" +
+                "user_role, " +
+                "user_name, " +
+                "user_pw) " +
+                "VALUES (?,?,?)";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+
+            pr.setString(1, String.valueOf(user.getRole()));
+            pr.setString(2, user.getName());
+            pr.setString(3, user.getPassword());
+
+            pr.executeUpdate();
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean update(User user) {
+        String query = "UPDATE public.user SET " +
+                "user_role = ? , " +
+                "user_name = ? , " +
+                "user_pw = ?  " +
+                "WHERE user_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setString(1, String.valueOf(user.getRole()));
+            pr.setString(2, user.getName());
+            pr.setString(3, user.getPassword());
+            pr.setInt(4, user.getId());
+
+            pr.executeUpdate();
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    public boolean delete(int id) {
+        String query = "DELETE FROM public.user WHERE user_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, id);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 }

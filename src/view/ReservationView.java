@@ -1,5 +1,5 @@
 package view;
-
+/// string kırpma burada
 import business.HotelManager;
 import business.ReservationManager;
 import business.RoomManager;
@@ -60,7 +60,7 @@ public class ReservationView extends Layout {
         this.lbl_checkout.setText("Check-out: " + this.checkOut);
         this.lbl_checkin.setText("Check-in: " + this.checkIn);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate dateIn = LocalDate.parse(checkIn, formatter);
         LocalDate dateOut = LocalDate.parse(checkOut, formatter);
         int totalDays =  (int) ChronoUnit.DAYS.between(dateIn, dateOut);

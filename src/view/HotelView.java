@@ -15,6 +15,7 @@ import javax.swing.*;
 import javax.swing.text.MaskFormatter;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class HotelView extends Layout {
@@ -41,9 +42,11 @@ public class HotelView extends Layout {
     private JCheckBox herseyDahil_cb;
     private JCheckBox tamPansiyon_cb;
     private JCheckBox sadeceYatak_cb;
-    private JTextField fld_hotel_season_strt;
-    private JTextField fld_hotel_season_end;
+    private JTextField fld_winter_start;
+    private JTextField fld_winter_end;
     private JCheckBox yediYirmidortOdaServisi_cb;
+    private JTextField fld_summer_start;
+    private JTextField fld_summer_end;
     private final Hotel hotel;
     private final HotelManager hotelManager;
     private final HotelFeatureManager hotelFeatureManager;
@@ -60,6 +63,7 @@ public class HotelView extends Layout {
         this.add(container);
         this.hotel = hotel;
         this.guiInitialize(700, 700);
+        initializeDateFields();
 
         cbHotelFeatures.add(ucretsizOtopark_cb);
         cbHotelFeatures.add(hotelConcierge_cb);
@@ -76,8 +80,6 @@ public class HotelView extends Layout {
         cbPension.add(tamPansiyon_cb);
         cbPension.add(alkolHaricFullCredit_cb);
         cbPension.add(sadeceYatak_cb);
-
-
 
         if (this.hotel.getHotelId() != 0) {
             this.fld_hotel_city.setText(this.hotel.getCity());
@@ -108,13 +110,14 @@ public class HotelView extends Layout {
 
             ArrayList<Season> seasonsFromDb = seasonManager.getSeasonsByHotelId(this.hotel.getHotelId());
             for (Season season : seasonsFromDb) {
-                this.fld_hotel_season_strt.setText(String.valueOf(season.getStrtDate()));
-                this.fld_hotel_season_end.setText(String.valueOf(season.getEndDate()));
+                this.fld_winter_start.setText(String.valueOf(season.getStrtDate()));
+                this.fld_winter_end.setText(String.valueOf(season.getEndDate()));
             }
         }
 
         btn_hotel_save.addActionListener(e -> {
-            if (Helper.isFieldListEmpty(new JTextField[]{this.fld_hotel_city, fld_hotel_region, fld_hotel_name, fld_hotel_phno, fld_hotel_mail, fld_hotel_star, fld_hotel_address})) {
+            if (Helper.isFieldListEmpty(new JTextField[]{this.fld_hotel_city, fld_hotel_region,
+                    fld_hotel_name, fld_hotel_phno, fld_hotel_mail, fld_hotel_star, fld_hotel_address})) {
                 Helper.showMessage("fill");
             } else {
                 boolean result = false;
@@ -130,31 +133,33 @@ public class HotelView extends Layout {
                 this.hotel.setStar(fld_hotel_star.getText());
                 this.hotel.setHotelAddress(fld_hotel_address.getText());
 
-                // iyileştirilecek
                 ArrayList<Season> seasons = new ArrayList<>();
-                this.hotel.setSeasons(seasons);
-                LocalDate dateStartSummer = LocalDate.of(2024, 6, 1);
-                LocalDate dateEndSummer = LocalDate.of(2024, 12, 30);
 
-                // iyileştirilecek
-                if (LocalDate.parse(fld_hotel_season_strt.getText()).equals(dateStartSummer)
-                        && LocalDate.parse(fld_hotel_season_end.getText()).equals(dateEndSummer)) {
-                    Season season = new Season();
-                    season.setSeasonName("yaz");
-                    season.setStrtDate(LocalDate.parse(fld_hotel_season_strt.getText()));
-                    season.setEndDate(LocalDate.parse(fld_hotel_season_end.getText()));
-                    seasons.add(season);
-                } else {
-                    Season season = new Season();
-                    season.setSeasonName("kış");
-                    season.setStrtDate(LocalDate.parse(fld_hotel_season_strt.getText()));
-                    season.setEndDate(LocalDate.parse(fld_hotel_season_end.getText()));
-                    seasons.add(season);
+                String winterStartText = fld_winter_start.getText();
+                String winterEndText = fld_winter_end.getText();
+                if (!winterStartText.isEmpty() && !winterEndText.isEmpty()) {
+                    LocalDate winterStart = LocalDate.parse(winterStartText, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    LocalDate winterEnd = LocalDate.parse(winterEndText, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    Season winterSeason = new Season();
+                    winterSeason.setSeasonName("kış");
+                    winterSeason.setStrtDate(winterStart);
+                    winterSeason.setEndDate(winterEnd);
+                    seasons.add(winterSeason);
                 }
 
+                String summerStartText = fld_summer_start.getText();
+                String summerEndText = fld_summer_end.getText();
+                if (!summerStartText.isEmpty() && !summerEndText.isEmpty()) {
+                    LocalDate summerStart = LocalDate.parse(summerStartText, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    LocalDate summerEnd = LocalDate.parse(summerEndText, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    Season summerSeason = new Season();
+                    summerSeason.setSeasonName("yaz");
+                    summerSeason.setStrtDate(summerStart);
+                    summerSeason.setEndDate(summerEnd);
+                    seasons.add(summerSeason);
+                }
                 this.hotel.setSeasons(seasons);
 
-//                ArrayList<JCheckBox> cbHotelFeatures = new ArrayList<>();
 
 
                 ArrayList<HotelFeature> selectedFeatures = new ArrayList<>();
@@ -167,8 +172,6 @@ public class HotelView extends Layout {
                         this.hotel.setHotelFeatures(selectedFeatures);
                     }
                 }
-//                ArrayList<JCheckBox> cbPension = new ArrayList<>();
-
 
                 ArrayList<Pension> selectedPensions = new ArrayList<>();
                 for (JCheckBox checkBox : cbPension) {
@@ -180,7 +183,6 @@ public class HotelView extends Layout {
                         this.hotel.setPensionTypes(selectedPensions);
                     }
                 }
-                //güncelle
                 if (this.hotel.getHotelId() != 0) {
                     result = this.hotelManager.update(this.hotel);
                     this.hotelFeatureManager.delete(this.hotel.getHotelId());
@@ -234,12 +236,16 @@ public class HotelView extends Layout {
             }
         });
     }
-    private void createUIComponents() throws ParseException {
-        this.fld_hotel_season_strt = new JFormattedTextField(new MaskFormatter("##/##/####"));
-        this.fld_hotel_season_strt.setText("01/01/2024");
-        this.fld_hotel_season_end = new JFormattedTextField(new MaskFormatter("##/##/####"));
-        this.fld_hotel_season_end.setText("02/01/2024");
+    private void initializeDateFields() {
+        // Kış sezonu başlangıç ve bitiş tarihleri
+        fld_winter_start.setText("01/01/2024");
+        fld_winter_end.setText("31/05/2024");
+
+        // Yaz sezonu başlangıç ve bitiş tarihleri
+        fld_summer_start.setText("01/06/2024");
+        fld_summer_end.setText("31/12/2024");
     }
+
 
 }
 

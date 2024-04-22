@@ -95,7 +95,7 @@ public class RoomManager {
 
     public ArrayList<Object[]> getForSearchedRoomTable(int size, ArrayList<Room> roomList) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate dateIn = LocalDate.parse(checkInDate, formatter);
         LocalDate dateOut = LocalDate.parse(checkOutDate, formatter);
         long totalDays = ChronoUnit.DAYS.between(dateIn, dateOut);
@@ -180,8 +180,8 @@ public class RoomManager {
 
         int total_guest = adult + child;
 
-        checkInDate = LocalDate.parse(checkInDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString();
-        checkOutDate = LocalDate.parse(checkOutDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString();
+        checkInDate = LocalDate.parse(checkInDate, DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString();
+        checkOutDate = LocalDate.parse(checkOutDate, DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString();
 
         if (checkInDate != null) where.add("s.season_start <= '" + checkInDate + "'");
         if (checkOutDate != null) where.add("s.season_end >= '" + checkOutDate + "'");
