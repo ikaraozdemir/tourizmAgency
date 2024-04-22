@@ -29,7 +29,6 @@ public class EmployeeView extends Layout{
     private JTextField fld_room_adult_filter;
     private JTextField fld_room_child_filter;
     private JButton btn_room_filter;
-    private JButton btn_room_clear;
     private Hotel hotel;
     private User user;
     private final DefaultTableModel tmbl_hotels = new DefaultTableModel();
@@ -256,8 +255,17 @@ public class EmployeeView extends Layout{
 
             int selectReservId = this.getTableSelectedRow(tbl_emp_reserv, 0);
             Reservation reservation = this.reservationManager.getById(selectReservId);
+            System.out.println(reservation.getReservRoomId() + "güncellemede room id");
             ArrayList<Room> room = this.roomManager.getRoomsWithDetails(reservation.getReservRoomId());
-            ReservationView reservationView = new ReservationView(room.get(0), adult, child,checkIn, checkOut);
+            Hotel hotel = this.hotelManager.getById(reservation.getReservHotelId());
+            room.get(0).setHotel(hotel);
+            String adultcount = String.valueOf(reservation.getAdultCount());
+            String childcount = String.valueOf(reservation.getChildCount());
+            String checkinRes = String.valueOf(reservation.getCheckinDate());
+            String checkOutRes = String.valueOf(reservation.getCheckOutDate());
+
+
+            ReservationView reservationView = new ReservationView(reservation,room.get(0), adultcount, childcount,checkinRes, checkOutRes);
             reservationView.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
@@ -266,12 +274,10 @@ public class EmployeeView extends Layout{
                 }
             });
         });
-        this.room_menu.add("Sil").addActionListener(e -> {
+        this.reserv_menu.add("Sil").addActionListener(e -> {
             if (Helper.confirm("sure")) {
-                int selectRoomId = this.getTableSelectedRow(tbl_emp_rooms, 0);
-                if (this.roomManager.delete(selectRoomId) &&
-                        this.roomFeatureManager.delete(selectRoomId)){
-
+                int selectReservId = this.getTableSelectedRow(tbl_emp_reserv, 0);
+                if (this.reservationManager.delete(selectReservId)){
                     Helper.showMessage("done");
                     loadRoomTable();
                 } else {

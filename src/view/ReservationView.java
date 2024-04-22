@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 
 public class ReservationView extends Layout {
     private JPanel container;
@@ -31,7 +32,7 @@ public class ReservationView extends Layout {
     private JLabel lbl_reserv_hotel_features;
     private JLabel lbl_reserv_hotel_name;
     private Room room;
-    private Reservation reservation = new Reservation();
+    private Reservation reservation;
     private HotelManager hotelManager;
     private ReservationManager reservationManager;
     private String adult;
@@ -40,7 +41,7 @@ public class ReservationView extends Layout {
     private String checkOut;
 
 
-    public ReservationView(Room room, String adult,String child, String checkIn, String checkOut) {
+    public ReservationView(Reservation reservation, Room room, String adult,String child, String checkIn, String checkOut) {
         this.add(container);
         this.guiInitialize(700, 700);
         this.reservationManager = new ReservationManager();
@@ -49,14 +50,15 @@ public class ReservationView extends Layout {
         this.child = child;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
+        this.reservation = reservation;
 
 
         this.lbl_reserv_hotel_name.setText("Otel: " + room.getHotel().getHotelName());
         this.lbl_reserv_room.setText("Oda Tipi: " + room.getPension().getPensionType());
         this.lbl_resrv_child.setText("Çocuk Sayısı: " + child);
         this.lbl_reserv_adult.setText("Yetişkin Sayısı: " + adult);
-        this.lbl_checkout.setText("Check-out: " + checkOut);
-        this.lbl_checkin.setText("Check-in: " + checkIn);
+        this.lbl_checkout.setText("Check-out: " + this.checkOut);
+        this.lbl_checkin.setText("Check-in: " + this.checkIn);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate dateIn = LocalDate.parse(checkIn, formatter);
@@ -67,42 +69,46 @@ public class ReservationView extends Layout {
 
         this.lbl_reserv_total_prc.setText("Toplam Tutar: " + totalPrice);
         this.lbl_reserv_season.setText("Sezon: " + this.room.getSeason().getStrtDate() + " " + this.room.getSeason().getEndDate());
-        String roomFeatures = "";
+
+        StringBuilder roomFeatures = new StringBuilder();
         for(RoomFeature roomFeature: this.room.getRoomFeatures()) {
             String keySet = roomFeature.getRoomFeature().keySet().toString();
             String values = roomFeature.getRoomFeature().values().toString();
             String keySetUpt =  keySet.substring(2, keySet.length() - 2);
             String valuesUpt =  values.substring(2, values.length() - 2);
-
-            roomFeatures += keySetUpt + " ";
+            roomFeatures.append(keySetUpt).append(" ");
             if (keySetUpt.equals("Oda Boyutu (metrekare):")) {
-                roomFeatures += valuesUpt + ", ";
+                roomFeatures.append(valuesUpt).append(", ");
             } else if (keySetUpt.equals("Yatak Sayısı:")) {
-                roomFeatures += valuesUpt + ", ";
+                roomFeatures.append(valuesUpt).append(", ");
             } else {
-                roomFeatures += ", ";
+                roomFeatures.append(", ");
             }
         }
-        if (roomFeatures.endsWith(", ")) {
-            roomFeatures  =  roomFeatures.substring(0,roomFeatures.length()-2);
+        if (roomFeatures.toString().endsWith(", ")) {
+            roomFeatures = new StringBuilder(roomFeatures.substring(0, roomFeatures.length() - 2));
         }
         System.out.println(roomFeatures);
-
         this.lbl_reserv_room_features.setText("Oda Özellikleri: " + roomFeatures);
 
-        String hotelFeatures = "";
-
+        StringBuilder hotelFeatures = new StringBuilder();
         for(HotelFeature hotelFeature: this.room.getHotel().getHotelFeatures()) {
             String feature = hotelFeature.getHotelFeature();
-
-            hotelFeatures += feature + ", ";
+            hotelFeatures.append(feature).append(", ");
         }
-
-        if (hotelFeatures.endsWith(", ")) {
-            hotelFeatures = hotelFeatures.substring(0, hotelFeatures.length() - 2);
+        if (hotelFeatures.toString().endsWith(", ")) {
+            hotelFeatures = new StringBuilder(hotelFeatures.substring(0, hotelFeatures.length() - 2));
         }
-
         this.lbl_reserv_hotel_features.setText("Tesis Özellikleri: " + hotelFeatures);
+
+        if (this.reservation.getReservId() != 0) {
+            this.fld_reserv_name.setText(this.reservation.getGuestName());
+            this.fld_reserv_idno.setText(this.reservation.getGuestIdno());
+            this.fld_reserv_mpno.setText(this.reservation.getGuestMpno());
+            this.fld_reserv_mail.setText(this.reservation.getGuestMail());
+            this.txt_reserv_note.setText(this.reservation.getReservNote());
+        }
+
 
         this.btn_reserv_save.addActionListener(e -> {
             if (Helper.isFieldListEmpty(new JTextField[]{this.fld_reserv_idno, fld_reserv_name,
@@ -111,8 +117,6 @@ public class ReservationView extends Layout {
             } else {
                 boolean result = false;
                 boolean result2 = false;
-
-                System.out.println(this.room.getRoomId() + "reservasyon kayıtta");
                 this.reservation.setReservRoomId(this.room.getRoomId());
                 this.reservation.setReservHotelId(this.room.getRoomHotelId());
                 this.reservation.setHotel(this.room.getHotel());
@@ -132,41 +136,27 @@ public class ReservationView extends Layout {
 
                 //güncelle
                 if (this.reservation.getReservId() != 0) {
-//                result = this.hotelManager.update(this.hotel);
-//                this.hotelFeatureManager.delete(this.hotel.getHotelId());
-//                for (HotelFeature feature : selectedFeatures) {
-////                        System.out.println(feature.getHotelFeature() + "alındı");
-//                    feature.setHotelFeatureHotelId(this.hotel.getHotelId());
-//                    result2 = hotelFeatureManager.save(feature);
-//                }
-//                this.pensionManager.delete(this.hotel.getHotelId());
-//                for (Pension pension : selectedPensions) {
-////                        System.out.println(pension.getPensionType() + "alındı");
-//                    pension.setPensionHotelId(this.hotel.getHotelId());
-//                    result3 = pensionManager.save(pension);
-//                }
-//                this.seasonManager.delete(this.hotel.getHotelId());
-//                for (Season season : this.hotel.getSeasons()) {
-////                        System.out.println(season.getSeasonName() + "alındı");
-//                    season.setSeasonHotelId(this.hotel.getHotelId());
-//                    result4 = seasonManager.save(season);
-//                }
-//                dispose();
+                    result = this.reservationManager.update(reservation);
+
+                    if (result) {
+                        Helper.showMessage("done");
+                        dispose();
+                    } else {
+                        Helper.showMessage("error");
+                    }
+
+                dispose();
                 }  else {
                     if (this.reservation.getReservId() == 0) {
-                        System.out.println(reservation.getGuestName());
-
-//                        System.out.println(hotelId);
                         result2 = this.reservationManager.save(this.reservation);
                     }
-                    dispose();
-
                     if (result2) {
                         Helper.showMessage("done");
                         dispose();
                     } else {
                         Helper.showMessage("error");
                     }
+                    dispose();
                 }
             }
 

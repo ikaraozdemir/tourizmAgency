@@ -12,12 +12,8 @@ import java.util.ArrayList;
 
 public class ReservationDao {
     private Connection connection;
-//    private RoomManager roomManager;
-//    private HotelManager hotelManager;
 
     public ReservationDao() {
-//        this.roomManager = new RoomManager();
-//        this.hotelManager = new HotelManager();
         this.connection = Database.getInstance();
     }
 
@@ -93,6 +89,57 @@ public class ReservationDao {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public boolean update(Reservation reservation) {
+        String query = "UPDATE public.reservation SET " +
+                "reserv_room_id = ? ," +
+                "adult_guest_count = ? ," +
+                "child_guest_count = ? ," +
+                "reserv_guest_idno = ? ," +
+                "reserv_guest_name = ? ," +
+                "reserv_guest_mpno = ? ," +
+                "reserv_guest_mail = ? ," +
+                "reserv_total_prc = ? ," +
+                "reserv_note = ? ," +
+                "checkin_date = ? ," +
+                "checkout_date = ? ," +
+                "reserv_hotel_id = ? " +
+                "WHERE reserv_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+
+            pr.setInt(1, reservation.getReservRoomId());
+            pr.setInt(2, reservation.getAdultCount());
+            pr.setInt(3, reservation.getChildCount());
+            pr.setString(4, reservation.getGuestIdno());
+            pr.setString(5, reservation.getGuestName());
+            pr.setString(6, reservation.getGuestMpno());
+            pr.setString(7, reservation.getGuestMail());
+            pr.setInt(8, reservation.getTotalPrice());
+            pr.setString(9, reservation.getReservNote());
+            pr.setDate(10, Date.valueOf(reservation.getCheckinDate()));
+            pr.setDate(11, Date.valueOf(reservation.getCheckOutDate()));
+            pr.setInt(12, reservation.getHotel().getHotelId());
+            pr.setInt(13, reservation.getReservId());
+
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    public boolean delete(int id) {
+        String query = "DELETE FROM public.reservation WHERE reserv_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, id);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     public Reservation match(ResultSet rs) throws SQLException {

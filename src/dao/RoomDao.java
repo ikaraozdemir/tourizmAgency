@@ -257,6 +257,23 @@ public class RoomDao {
         return true;
     }
 
+    public boolean updateRoomStock(int roomId, int change) {
+        // Oda stoğunu güncelleme sorgusu
+        String query = "UPDATE public.room SET room_stock = room_stock + ? WHERE room_id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, change);
+            ps.setInt(2, roomId);
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
 
     public Room match(ResultSet rs) throws SQLException {

@@ -2,6 +2,7 @@ package view;
 
 import business.RoomManager;
 import core.Helper;
+import entity.Reservation;
 import entity.Room;
 
 import javax.swing.*;
@@ -24,8 +25,6 @@ public class FilteredRoomView extends Layout{
     private String checkIn;
     private String checkOut;
 
-
-
     public FilteredRoomView (String adult, String child, String checkIn, String checkOut) {
         this.add(container);
         this.guiInitialize(700, 700);
@@ -34,8 +33,6 @@ public class FilteredRoomView extends Layout{
         this.child = child;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
-
-
     }
 
     public void loadSearchedRoomTable(ArrayList<Object[]> roomReservationRow) {
@@ -50,23 +47,24 @@ public class FilteredRoomView extends Layout{
         this.searched_room_menu.add("Rezervasyon Yap").addActionListener(e -> {
             int selectSeearchedRoomId = this.getTableSelectedRow(tbl_searched_room,0);
             ReservationView reservationView = null;
+            Reservation reservation = new Reservation();
 
             for (Room room : rooms) {
                 if (room.getRoomId() == selectSeearchedRoomId) {
-                    reservationView = new ReservationView(room, adult, child, checkIn, checkOut);
+                    reservationView = new ReservationView(reservation,room, adult, child, checkIn, checkOut);
 
                 }
             }
-
-
-            reservationView.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    EmployeeView employeeView = new EmployeeView();
-                    employeeView.loadRezervationTable();
-
-                }
-            });
+            ///////////////////////////////
+            if (reservationView != null) {
+                reservationView.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        EmployeeView employeeView = new EmployeeView();
+                        employeeView.loadRezervationTable();
+                    }
+                });
+            }
         });
         this.tbl_searched_room.setComponentPopupMenu(searched_room_menu);
 

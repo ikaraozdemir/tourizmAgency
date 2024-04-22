@@ -27,7 +27,33 @@ public class ReservationManager {
             Helper.showMessage("error");
             return false;
         }
-        return this.reservationDao.save(reservation);
+        // Oda stoğunu güncelle
+        int roomId = reservation.getReservRoomId();
+        if (this.roomManager.updateRoomStock(roomId, -1) && this.reservationDao.save(reservation)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean update(Reservation reservation) {
+        if (this.getById(reservation.getReservId()) == null) {
+            Helper.showMessage("notFound");
+            return false;
+        }
+        return this.reservationDao.update(reservation);
+    }
+
+    public boolean delete(int id) {
+        Reservation reservation = this.getById(id);
+        if (reservation == null) {
+            Helper.showMessage("kayıt bulunamadı");
+            return false;
+        }
+        int roomId = reservation.getReservRoomId();
+
+        return this.reservationDao.delete(id) && this.roomManager.updateRoomStock(roomId,1);
+
     }
 
     public ArrayList<Reservation> findAll() {

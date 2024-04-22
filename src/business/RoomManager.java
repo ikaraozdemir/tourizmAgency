@@ -151,6 +151,14 @@ public class RoomManager {
         return roomId;
     }
 
+    public boolean updateRoomStock(int roomId, int change) {
+        if(this.getById(roomId) == null){
+            Helper.showMessage("kayıt bulunamadı");
+            return false;
+        }
+        return this.roomDao.updateRoomStock(roomId, change);
+    }
+
     public boolean delete(int roomId) {
         if (this.getById(roomId) == null) {
             Helper.showMessage("kayıt bulunamadı");
@@ -219,9 +227,8 @@ public class RoomManager {
                     String str1 = roomFeature.getRoomFeature().values().toString();
                     String str2 = str1.substring(2, str1.length() - 2);
                     int bedCount = Integer.parseInt(str2);
-                    if (bedCount < total_guest) {
+                    if (bedCount < total_guest && room.getRoomStock() < 1) {
                         System.out.println(bedCount + " yatak sayısı, " + total_guest + " total misafir");
-                        // Silinecek odaların referanslarını listeye ekleyin
                         roomsToRemove.add(room);
                     }
                 }
@@ -239,51 +246,4 @@ public class RoomManager {
         return searchedRoomListUpdated;
     }
 
-    public String getCheckOutDate() {
-        return checkOutDate;
-    }
-
-    public void setCheckOutDate(String checkOutDate) {
-        this.checkOutDate = checkOutDate;
-    }
-
-    public String getCheckInDate() {
-        return checkInDate;
-    }
-
-    public void setCheckInDate(String checkInDate) {
-        this.checkInDate = checkInDate;
-    }
-
-    public int getAdult() {
-        return adult;
-    }
-
-    public void setAdult(int adult) {
-        this.adult = adult;
-    }
-
-    public int getChild() {
-        return child;
-    }
-
-    public void setChild(int child) {
-        this.child = child;
-    }
-
-    public int getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(int totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public int getTotalDays() {
-        return totalDays;
-    }
-
-    public void setTotalDays(int totalDays) {
-        this.totalDays = totalDays;
-    }
 }
