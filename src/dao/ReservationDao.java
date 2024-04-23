@@ -154,7 +154,6 @@ public class ReservationDao {
         reservation.setGuestMail(rs.getString("reserv_guest_mail"));
         reservation.setTotalPrice(rs.getInt("reserv_total_prc"));
         reservation.setReservNote(rs.getString("reserv_note"));
-        reservation.setTotalDayCount(rs.getInt("reserv_total_days"));
         reservation.setCheckinDate(rs.getDate("checkin_date").toLocalDate());
         reservation.setCheckOutDate(rs.getDate("checkout_date").toLocalDate());
         reservation.setReservHotelId(rs.getInt("reserv_hotel_id"));

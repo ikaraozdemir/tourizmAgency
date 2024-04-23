@@ -38,13 +38,6 @@ public class SeasonManager {
         return this.seasonDao.getSeasonsByHotelId(id);
     }
 
-//    public boolean update(Season season) {
-//        if (this.getById(season.getSeasonId()) == null) {
-//            Helper.showMessage("notFound");
-//            return false;
-//        }
-//        return this.seasonDao.update(season);
-//    }
 
     public boolean delete(int hotelId) {
         if (this.getSeasonsByHotelId(hotelId) == null) {

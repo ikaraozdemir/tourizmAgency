@@ -65,6 +65,8 @@ public class HotelView extends Layout {
         this.guiInitialize(700, 700);
         initializeDateFields();
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
         cbHotelFeatures.add(ucretsizOtopark_cb);
         cbHotelFeatures.add(hotelConcierge_cb);
         cbHotelFeatures.add(yuzmeHavuzu_cb);
@@ -110,8 +112,14 @@ public class HotelView extends Layout {
 
             ArrayList<Season> seasonsFromDb = seasonManager.getSeasonsByHotelId(this.hotel.getHotelId());
             for (Season season : seasonsFromDb) {
-                this.fld_winter_start.setText(String.valueOf(season.getStrtDate()));
-                this.fld_winter_end.setText(String.valueOf(season.getEndDate()));
+                if (season.getSeasonName().equals("kış")){
+                    this.fld_winter_start.setText((season.getStrtDate().format(formatter)));
+                    this.fld_winter_end.setText((season.getEndDate().format(formatter)));
+                }else if (season.getSeasonName().equals("yaz")) {
+                    this.fld_summer_start.setText((season.getStrtDate().format(formatter)));
+                    this.fld_summer_end.setText((season.getEndDate().format(formatter)));
+                }
+
             }
         }
 
@@ -204,6 +212,13 @@ public class HotelView extends Layout {
                         result4 = seasonManager.save(season);
                     }
                     dispose();
+                    if (result && result2 && result3 && result4) {
+                        Helper.showMessage("done");
+
+                        dispose();
+                    } else {
+                        Helper.showMessage("error");
+                    }
                 } else {
                     int hotelId = this.hotelManager.saveAndGetHotelId(this.hotel);
 

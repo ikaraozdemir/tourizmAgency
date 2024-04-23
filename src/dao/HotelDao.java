@@ -81,7 +81,6 @@ public class HotelDao {
     }
 
     public ArrayList<Hotel> selectByQuery(String query) {
-        System.out.println(query + "####");
         ArrayList<Hotel> hotelList = new ArrayList<>();
         try {
             ResultSet rs = this.connection.createStatement().executeQuery(query);
