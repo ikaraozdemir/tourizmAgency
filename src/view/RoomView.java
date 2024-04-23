@@ -52,8 +52,7 @@ public class RoomView extends Layout {
         this.room = room;
         this.hotel = hotel;
 
-        this.lbl_room_set_hotel_name.setText("Otel:  " + this.hotel.getHotelName());
-
+        this.lbl_room_set_hotel_name.setText("<html><b>Otel:</b> " + this.hotel.getHotelName() + "</html>");
 
         this.cmb_room_type.setModel(new DefaultComboBoxModel<>(Room.Type.values()));
 
@@ -69,29 +68,23 @@ public class RoomView extends Layout {
 
         cbRoomFeatures.addAll(Arrays.asList(tv_cb,kasa_cb,minibar_cb,projeksiyon_cb,konsol_cb));
 
-//        System.out.println(this.room.getRoomId());
         if (this.room.getRoomId() != 0) {
               this.fld_room_stock.setText(String.valueOf(this.room.getRoomStock()));
               this.fld_room_adult_prc.setText(String.valueOf(this.room.getPriceAdult()));
               this.fld_room_child_prc.setText(String.valueOf(this.room.getPriceChild()));
-//              this.fld_room_feature_size.setText(this.room.);
-            System.out.println(this.hotel.getHotelId() + "otel id");
              ArrayList<RoomFeature> featuresFromDb =  roomFeatureManager.getFeaturesByRoomId(this.room.getRoomId());
-             System.out.println(featuresFromDb.get(0).getRoomFeatureId() + " room feature id");
 
             for (JCheckBox checkBox : cbRoomFeatures) {
                 System.out.println("buraya girdi");
                 for (RoomFeature feature : featuresFromDb) {
 
                     String output = feature.getRoomFeature().keySet().iterator().next();
-                    output = output.substring(1, output.length() - 1); // İlk iki karakteri ve son iki karakteri at
                     System.out.println(output);
 
                     if (checkBox.getText().equalsIgnoreCase((output))) {
-                        checkBox.setSelected(true); // Eşleşen checkbox'ı seçili hale getirin
+                        checkBox.setSelected(true);
                     } else {
                         String output2 = feature.getRoomFeature().values().iterator().next().toString();
-                        output2 = output2.substring(1, output2.length() - 1); // İlk iki karakteri ve son iki karakteri at
                         System.out.println(output2);
                         if (output.equals("Oda Boyutu (metrekare):")) {
                             this.fld_room_feature_size.setText(String.valueOf(output2));
@@ -108,8 +101,6 @@ public class RoomView extends Layout {
 
         }
 
-//        System.out.println(cbRoomFeatures.get(0).getText());
-
         btn_room_save.addActionListener(e -> {
             if (Helper.isFieldListEmpty(new JTextField[]{this.fld_room_adult_prc, fld_room_child_prc, fld_room_stock, fld_room_feature_size, fld_room_feature_beds})) {
                 Helper.showMessage("fill");
@@ -118,7 +109,6 @@ public class RoomView extends Layout {
                 boolean result2 = false;
                 this.room.setHotel(this.hotel);
                 this.room.setRoomHotelId(this.hotel.getHotelId());
-                System.out.println(this.room.getRoomHotelId() + " numaralı otel");
                 this.room.setRoomStock(Integer.parseInt(fld_room_stock.getText()));
                 this.room.setPriceAdult(Integer.parseInt(fld_room_adult_prc.getText()));
                 this.room.setPriceChild(Integer.parseInt(fld_room_child_prc.getText()));
@@ -137,7 +127,7 @@ public class RoomView extends Layout {
                 for (JCheckBox checkBox : cbRoomFeatures) {
                     if (checkBox.isSelected()) {
                         RoomFeature feature = new RoomFeature();
-                        feature.addRoomFeature(checkBox.getText(),true);
+                        feature.addRoomFeature(checkBox.getText(),"var");
                         feature.setRoomFeatureRoomId(this.room.getRoomId());
                         selectedFeatures.add(feature);
                     }
@@ -161,7 +151,6 @@ public class RoomView extends Layout {
                     result = this.roomManager.update(this.room);
                     this.roomFeatureManager.delete(this.room.getRoomId());
                     for (RoomFeature feature : selectedFeatures) {
-//                        System.out.println(feature.getHotelFeature() + "alındı");
                         feature.setRoomFeatureRoomId(this.room.getRoomId());
                         result2 = roomFeatureManager.save(feature);
                     }

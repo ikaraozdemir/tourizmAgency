@@ -75,18 +75,26 @@ public class RoomManager {
             rowObject[i++] = room.getPriceAdult();
             rowObject[i++] = room.getPriceChild();
             rowObject[i++] = room.getType();
-            ArrayList<String> roomFeatureList = new ArrayList<>();
+
+            StringBuilder roomFeature = new StringBuilder();
             for (RoomFeature feature : room.getRoomFeatures()) {
                 for (Map.Entry<String, Object> entry : feature.getRoomFeature().entrySet()) {
                     String key = entry.getKey();
                     Object value = entry.getValue();
-                    String keyValueString = key + ": " + value.toString();
-                    roomFeatureList.add(keyValueString);
+                    String keyValue;
+                    if (key.endsWith(":")) {
+                        keyValue = key + " " + value.toString();
+                    } else {
+                        keyValue = key + ": " + value.toString();
+                    }
+                    roomFeature.append(keyValue).append(", "); // Her özelliği ekle
                 }
             }
-
-
-            rowObject[i++] = roomFeatureList;
+            String roomFeatures = roomFeature.toString();
+            if (roomFeatures.length() > 2) {
+                roomFeatures = roomFeatures.substring(0, roomFeatures.length() - 2);
+            }
+            rowObject[i++] = roomFeatures;
             roomObjList.add(rowObject);
         }
         return roomObjList;
@@ -117,16 +125,25 @@ public class RoomManager {
             rowObject[i++] = room.getRoomStock();
             rowObject[i++] = room.getType();
 
-            ArrayList<String> roomFeatureList = new ArrayList<>();
+            StringBuilder roomFeature = new StringBuilder();
             for (RoomFeature feature : room.getRoomFeatures()) {
                 for (Map.Entry<String, Object> entry : feature.getRoomFeature().entrySet()) {
                     String key = entry.getKey();
                     Object value = entry.getValue();
-                    String keyValueString = key + ": " + value.toString();
-                    roomFeatureList.add(keyValueString);
+                    String keyValue;
+                    if (key.endsWith(":")) {
+                        keyValue = key + " " + value.toString();
+                    } else {
+                        keyValue = key + ": " + value.toString();
+                    }
+                    roomFeature.append(keyValue).append(", "); // Her özelliği ekle
                 }
             }
-            rowObject[i++] = roomFeatureList;
+            String roomFeatures = roomFeature.toString();
+            if (roomFeatures.length() > 2) {
+                roomFeatures = roomFeatures.substring(0, roomFeatures.length() - 2);
+            }
+            rowObject[i++] = roomFeatures;
             rowObject[i++] = totalDays;
             rowObject[i++] = room.getPriceAdult();
             rowObject[i++] = room.getPriceChild();

@@ -26,13 +26,13 @@ public class LoginView extends Layout {
             } else {
                 User loginUser = this.userManager.findByLogin(this.fld_username.getText(), this.fld_pw.getText());
                 System.out.println(loginUser.getRole());
-                if (loginUser.getId() == 0) {
+                if (loginUser.getId() == 0 || loginUser == null) {
                     Helper.showMessage("notFound");
                 } else if (loginUser.getRole().toString().equals("ADMIN")) {
-                    AdminView adminView = new AdminView(loginUser);
+                    new AdminView(loginUser);
                     dispose();
                 }else if (loginUser.getRole().toString().equals("EMPLOYEE")) {
-                    EmployeeView employeeView = new EmployeeView(loginUser);
+                    new EmployeeView(loginUser);
                     dispose();
                 }
             }

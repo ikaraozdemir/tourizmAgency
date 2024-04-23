@@ -34,19 +34,25 @@ public class HotelManager {
             for (Pension pension : hotel.getPensionTypes()) {
                 pensionTypeList.add(pension.getPensionType());
             }
-            rowObject[i++] = pensionTypeList;
+            String pensionTypes = String.join(", ", pensionTypeList);
+
+            rowObject[i++] = pensionTypes;
 
             ArrayList<String> hotelFeatureList = new ArrayList<>();
             for (HotelFeature hotelFeature : hotel.getHotelFeatures()) {
                 hotelFeatureList.add(hotelFeature.getHotelFeature());
             }
-            rowObject[i++] = hotelFeatureList;
+            String hotelFeatures = String.join(", ", hotelFeatureList);
+
+            rowObject[i++] = hotelFeatures;
 
             ArrayList<String> seasonNameList = new ArrayList<>();
             for (Season season : hotel.getSeasons()) {
                 seasonNameList.add(season.getSeasonName());
             }
-            rowObject[i++] = seasonNameList;
+            String seasonNames = String.join(", ", seasonNameList);
+            rowObject[i++] = seasonNames;
+
             hotelObjList.add(rowObject);
         }
         return hotelObjList;

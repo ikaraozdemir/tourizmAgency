@@ -208,7 +208,6 @@ public class HotelView extends Layout {
                     int hotelId = this.hotelManager.saveAndGetHotelId(this.hotel);
 
                     if (hotelId != 0) {
-//                        System.out.println(hotelId);
                         for (HotelFeature feature : selectedFeatures) {
                             feature.setHotelFeatureHotelId(hotelId);
                             result2 = hotelFeatureManager.save(feature);
@@ -221,7 +220,6 @@ public class HotelView extends Layout {
                             season.setSeasonHotelId(hotelId);
                             result4 = seasonManager.save(season);
                         }
-
                     }
                     dispose();
 
@@ -237,11 +235,9 @@ public class HotelView extends Layout {
         });
     }
     private void initializeDateFields() {
-        // Kış sezonu başlangıç ve bitiş tarihleri
         fld_winter_start.setText("01/01/2024");
         fld_winter_end.setText("31/05/2024");
 
-        // Yaz sezonu başlangıç ve bitiş tarihleri
         fld_summer_start.setText("01/06/2024");
         fld_summer_end.setText("31/12/2024");
     }

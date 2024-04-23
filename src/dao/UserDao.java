@@ -22,6 +22,7 @@ public class UserDao {
         user.setPassword(rs.getString("user_pw"));
         return user;
     }
+
     public User getById(int id) {
         User obj = null;
         String query = "SELECT * FROM public.user WHERE user_id = ?";
@@ -51,12 +52,13 @@ public class UserDao {
     }
 
     public User findByLogin(String username, String password) {
+
         User user = null;
-        String query = "SELECT * FROM public.user WHERE user_name = ? AND user_pw = ?";
+        String query = "SELECT * FROM public.user WHERE LOWER(user_name) = LOWER(?) AND user_pw = ?";
 
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-            pr.setString(1, username);
+            pr.setString(1, username.toLowerCase());
             pr.setString(2, password);
             ResultSet rs = pr.executeQuery();
             if (rs.next()) {

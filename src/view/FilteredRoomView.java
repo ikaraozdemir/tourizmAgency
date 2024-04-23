@@ -35,7 +35,7 @@ public class FilteredRoomView extends Layout{
 
     public void loadSearchedRoomTable(ArrayList<Object[]> roomReservationRow) {
         this.col_searched_room = new Object[]{"ID", "Otel","Otel ID", "Sezon Başlangıcı", "Sezon Bitişi", "Pansiyon Tipi",
-                "Oda Stoğu", "Oda Tipi", "Oda Özellikleri", "Toplam Gün", "Yetişkin İçin Fiyat", "Çocuk İçin Fiyat", "Toplam Fiyat"};
+                "Oda Stoğu", "Oda Tipi", "Oda Özellikleri", "Toplam Konaklama Günü", "Yetişkin Gecelik Fiyat (TL)", "Çocuk Gecelik Fiyat (TL)", "Toplam Fiyat (TL)"};
         createTable(this.tmbl_searched_room, this.tbl_searched_room, col_searched_room, roomReservationRow);
     }
 

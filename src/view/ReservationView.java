@@ -53,12 +53,12 @@ public class ReservationView extends Layout {
         this.reservation = reservation;
 
 
-        this.lbl_reserv_hotel_name.setText("Otel: " + room.getHotel().getHotelName());
-        this.lbl_reserv_room.setText("Oda Tipi: " + room.getPension().getPensionType());
-        this.lbl_resrv_child.setText("Çocuk Sayısı: " + child);
-        this.lbl_reserv_adult.setText("Yetişkin Sayısı: " + adult);
-        this.lbl_checkout.setText("Check-out: " + this.checkOut);
-        this.lbl_checkin.setText("Check-in: " + this.checkIn);
+        this.lbl_reserv_hotel_name.setText("<html><b>Otel:</b> " + room.getHotel().getHotelName() + "<html>");
+        this.lbl_reserv_room.setText("<html><b>Oda Tipi:</b> " + room.getPension().getPensionType() +"<html>");
+        this.lbl_resrv_child.setText("<html><b>Çocuk Sayısı:</b> " + child + "<html>");
+        this.lbl_reserv_adult.setText("<html><b>Yetişkin Sayısı:<b> " + adult + "<html>");
+        this.lbl_checkout.setText("<html><b>Check-out:<b> " + this.checkOut + "<html>");
+        this.lbl_checkin.setText("<html><b>Check-in:<b> " + this.checkIn + "<html>");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate dateIn = LocalDate.parse(checkIn, formatter);
@@ -67,15 +67,15 @@ public class ReservationView extends Layout {
         int totalChildAdultPrice = Integer.parseInt(adult)  * room.getPriceAdult() + Integer.parseInt(child)  * room.getPriceChild();
         int totalPrice =  totalChildAdultPrice * totalDays;
 
-        this.lbl_reserv_total_prc.setText("Toplam Tutar: " + totalPrice);
-        this.lbl_reserv_season.setText("Sezon: " + this.room.getSeason().getStrtDate() + " " + this.room.getSeason().getEndDate());
+        this.lbl_reserv_total_prc.setText("<html><b>Toplam Tutar (TL):<b> " + totalPrice + "<html>");
+        this.lbl_reserv_season.setText("<html><b>Sezon:<b> " + this.room.getSeason().getStrtDate() + "-" + this.room.getSeason().getEndDate() + "<html>");
 
         StringBuilder roomFeatures = new StringBuilder();
         for(RoomFeature roomFeature: this.room.getRoomFeatures()) {
             String keySet = roomFeature.getRoomFeature().keySet().toString();
             String values = roomFeature.getRoomFeature().values().toString();
-            String keySetUpt =  keySet.substring(2, keySet.length() - 2);
-            String valuesUpt =  values.substring(2, values.length() - 2);
+            String keySetUpt =  keySet.substring(1, keySet.length() - 1);
+            String valuesUpt =  values.substring(1, values.length() - 1);
             roomFeatures.append(keySetUpt).append(" ");
             if (keySetUpt.equals("Oda Boyutu (metrekare):")) {
                 roomFeatures.append(valuesUpt).append(", ");
@@ -89,7 +89,7 @@ public class ReservationView extends Layout {
             roomFeatures = new StringBuilder(roomFeatures.substring(0, roomFeatures.length() - 2));
         }
         System.out.println(roomFeatures);
-        this.lbl_reserv_room_features.setText("Oda Özellikleri: " + roomFeatures);
+        this.lbl_reserv_room_features.setText("<html><b>Oda Özellikleri:<b> " + roomFeatures + "<html>");
 
         StringBuilder hotelFeatures = new StringBuilder();
         for(HotelFeature hotelFeature: this.room.getHotel().getHotelFeatures()) {
@@ -99,7 +99,7 @@ public class ReservationView extends Layout {
         if (hotelFeatures.toString().endsWith(", ")) {
             hotelFeatures = new StringBuilder(hotelFeatures.substring(0, hotelFeatures.length() - 2));
         }
-        this.lbl_reserv_hotel_features.setText("Tesis Özellikleri: " + hotelFeatures);
+        this.lbl_reserv_hotel_features.setText("<html><b>Tesis Özellikleri:<b> " + hotelFeatures + "<html>");
 
         if (this.reservation.getReservId() != 0) {
             this.fld_reserv_name.setText(this.reservation.getGuestName());

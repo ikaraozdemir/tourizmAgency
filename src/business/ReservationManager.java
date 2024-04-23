@@ -70,12 +70,12 @@ public class ReservationManager {
             Hotel hotel = this.hotelManager.getById(reservation.getReservHotelId());
             ArrayList<Room> rooms = this.roomManager.getRoomsWithDetails(reservation.getReservRoomId());
 
-            String hotelFeatures = "";
+            StringBuilder hotelFeatures = new StringBuilder();
             String roomType = "";
 
 
             for (HotelFeature hotelFeature : hotel.getHotelFeatures()) {
-                hotelFeatures += hotelFeature + ", ";
+                hotelFeatures.append(hotelFeature).append(", ");
             }
 
 
@@ -88,7 +88,6 @@ public class ReservationManager {
             rowObject[i++] = reservation.getReservId();
             rowObject[i++] = hotel.getHotelName();
             rowObject[i++] = roomType;
-//            rowObject[i++] = hotelFeatures;
             rowObject[i++] = reservation.getCheckinDate();
             rowObject[i++] = reservation.getCheckOutDate();
             rowObject[i++] = reservation.getGuestIdno();
@@ -104,6 +103,3 @@ public class ReservationManager {
         return reservObjList;
     }
 }
-
-//        {"ID", "Otel İsmi","Oda Tipi", "Check-in", "Check-out", "Misafir TC No",
-//        "Misafir İsim", "Misafir Numara", "Misafir Mail", "Yetişkin Misafir", "Çocuk Misafir", "Total Fiyat"};

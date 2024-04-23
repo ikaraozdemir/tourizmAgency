@@ -87,7 +87,7 @@ public class EmployeeView extends Layout{
         if (this.user == null) {
             dispose();
         }
-        this.lbl_hotel_welcome.setText("Hoşgeldiniz " + this.user.getName());
+        this.lbl_hotel_welcome.setText("<html><b>Hoşgeldiniz<b><html> " + this.user.getName() );
 
         loadHotelTable();
         loadHotelComponent();
@@ -126,7 +126,7 @@ public class EmployeeView extends Layout{
 
     public void loadRoomTable() {
         this.col_room = new Object[]{"ID", "Otel","Otel ID", "Sezon Başlangıcı", "Sezon Bitişi", "Pansiyon Tipi",
-                "Oda Stoğu", "Yetişkin İçin Fiyat", "Çocuk İçin Fiyat", "Oda Tipi", "Oda Özellikleri"};
+                "Oda Stoğu", "Yetişkin Gecelik Fiyat (TL)", "Çocuk Gecelik Fiyat (TL)", "Oda Tipi", "Oda Özellikleri"};
 
         ArrayList<Object[]> roomList = this.roomManager.getForTable(col_room.length, this.roomManager.getRoomsWithDetails(-1));
         System.out.println();
@@ -135,7 +135,7 @@ public class EmployeeView extends Layout{
 
     public void loadReservationTable() {
         this.col_reserv = new Object[]{"ID", "Otel İsmi","Oda Tipi", "Check-in", "Check-out", "Misafir TC No",
-                "Misafir İsim", "Misafir Numara", "Misafir Mail", "Yetişkin Misafir", "Çocuk Misafir", "Total Fiyat"};
+                "Misafir İsim", "Misafir Numara", "Misafir Mail", "Yetişkin Misafir", "Çocuk Misafir", "Total Fiyat (TL)"};
         ArrayList<Object[]> reservList = this.reservationManager.getForTable(col_reserv.length, this.reservationManager.findAll());
         createTable(this.tmbl_reserv, this.tbl_emp_reserv, col_reserv,reservList);
     }
@@ -255,7 +255,7 @@ public class EmployeeView extends Layout{
             int selectHotelId = this.getTableSelectedRow(tbl_emp_rooms, 2);
             int selectRoomId = this.getTableSelectedRow(tbl_emp_rooms, 0);
 
-            RoomView roomView = new RoomView(this.roomManager.getById(selectRoomId),this.hotelManager.getById(selectHotelId));
+            RoomView roomView = new RoomView(this.roomManager.getRoomsWithDetails(selectRoomId).get(0),this.hotelManager.getById(selectHotelId));
             roomView.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
@@ -313,13 +313,14 @@ public class EmployeeView extends Layout{
             if (Helper.confirm("sure")) {
                 int selectReservId = this.getTableSelectedRow(tbl_emp_reserv, 0);
                 if (this.reservationManager.delete(selectReservId)){
-                    Helper.showMessage("done");
                     loadRoomTable();
+                    Helper.showMessage("done");
                 } else {
                     Helper.showMessage("error");
                 }
             }
         });
+
         this.tbl_emp_reserv.setComponentPopupMenu(reserv_menu);
 
     }
