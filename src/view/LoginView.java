@@ -13,6 +13,8 @@ public class LoginView extends Layout {
     private JButton btn_login;
     private JPanel container;
     private JPasswordField fld_pw;
+    private JLabel lbl_welcome;
+    private JLabel lbl_welcome2;
     private final UserManager userManager;
 
     public LoginView () {

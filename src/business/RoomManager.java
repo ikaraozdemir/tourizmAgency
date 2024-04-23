@@ -211,6 +211,7 @@ public class RoomManager {
             query += " WHERE " + whereStr;
         }
 
+        System.out.println(query + "    ### searchForReservation ");
         ArrayList<Room> searchedRoomList = this.roomDao.selectByQuery(query);
         ArrayList<Room> searchedRoomListUpdated = new ArrayList<>();
 
@@ -218,6 +219,8 @@ public class RoomManager {
            ArrayList<Room> roomsWithDetails0 = this.getRoomsWithDetails(room.getRoomId());
            searchedRoomListUpdated.add (roomsWithDetails0.get(0));
         }
+
+        System.out.println(searchedRoomListUpdated.isEmpty() + "rezervasyon olanlar çıkmadan önce");
 
         rezervOrWhere.add("('" + checkInDate + "' BETWEEN checkin_date AND checkout_date)");
         rezervOrWhere.add("('" + checkOutDate + "' BETWEEN checkin_date AND checkout_date)");
@@ -228,22 +231,29 @@ public class RoomManager {
         String reservQuery = "SELECT * FROM public.reservation WHERE " + rezervOrWhereStr;
 
         ArrayList<Reservation> reservList = this.reservationDao.selectByQuery(reservQuery);
+
+        System.out.println(reservQuery + "reserv query");
         ArrayList<Integer> reservedRoomId = new ArrayList<>();
 
         for (Reservation reservation : reservList) {
             reservedRoomId.add(reservation.getReservRoomId());
         }
-        searchedRoomListUpdated.removeIf(room -> reservedRoomId.contains(room.getRoomId()));
+        searchedRoomListUpdated.removeIf(room -> reservedRoomId.contains(room.getRoomId()) && room.getRoomStock()<1);
 
+        System.out.println(searchedRoomListUpdated.isEmpty() + "rezerv odalar çıkınca boş mu");
 
         List<Room> roomsToRemove = new ArrayList<>();
 
         for (Room room : searchedRoomListUpdated) {
             for (RoomFeature roomFeature : room.getRoomFeatures()) {
-                if (Objects.equals(roomFeature.getRoomFeature().keySet().toString(), "[[Yatak Sayısı:]]")) {
+                System.out.println(roomFeature.getRoomFeature().keySet() + " searchForReservation da ");
+
+                if (Objects.equals(roomFeature.getRoomFeature().keySet().toString(), "[Yatak Sayısı:]")) {
+                    System.out.println("yatak hesaplamaya girdi ");
                     String str1 = roomFeature.getRoomFeature().values().toString();
-                    String str2 = str1.substring(2, str1.length() - 2);
+                    String str2 = str1.substring(1, str1.length() - 1);
                     int bedCount = Integer.parseInt(str2);
+                    System.out.println(room.getRoomId() + " ID numaralı odanın yatak sayısı " + bedCount);
                     if (bedCount < total_guest && room.getRoomStock() < 1) {
                         System.out.println(bedCount + " yatak sayısı, " + total_guest + " total misafir");
                         roomsToRemove.add(room);
@@ -254,11 +264,6 @@ public class RoomManager {
 
 // Silinecek odaların referanslarını listeden kaldırın
         searchedRoomListUpdated.removeAll(roomsToRemove);
-
-        for (Room room: searchedRoomListUpdated) {
-            System.out.println(room.getHotel().getHotelFeatures() + " searchedRoomList roomManager");
-
-        }
 
         return searchedRoomListUpdated;
     }

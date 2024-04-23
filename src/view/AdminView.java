@@ -27,7 +27,7 @@ public class AdminView extends Layout{
         if (this.user == null) {
             dispose();
         }
-        this.lbl_welcome.setText("Hoşgeldiniz " + this.user.getName());
+        this.lbl_welcome.setText("<html><b>Hoşgeldiniz</b> " + this.user.getName() + "</html>");
         loadUserTable();
         loadUserComponent();
 
@@ -84,7 +84,7 @@ public class AdminView extends Layout{
     private void loadComponent () {
         this.btn_user_logout.addActionListener(e -> {
             dispose();
-            LoginView loginView = new LoginView();
+             new LoginView();
         });
     }
 }

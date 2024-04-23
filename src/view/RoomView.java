@@ -75,21 +75,16 @@ public class RoomView extends Layout {
              ArrayList<RoomFeature> featuresFromDb =  roomFeatureManager.getFeaturesByRoomId(this.room.getRoomId());
 
             for (JCheckBox checkBox : cbRoomFeatures) {
-                System.out.println("buraya girdi");
                 for (RoomFeature feature : featuresFromDb) {
-
                     String output = feature.getRoomFeature().keySet().iterator().next();
-                    System.out.println(output);
 
                     if (checkBox.getText().equalsIgnoreCase((output))) {
                         checkBox.setSelected(true);
                     } else {
                         String output2 = feature.getRoomFeature().values().iterator().next().toString();
-                        System.out.println(output2);
                         if (output.equals("Oda Boyutu (metrekare):")) {
                             this.fld_room_feature_size.setText(String.valueOf(output2));
                         } else if (output.equals("Yatak Sayısı:")){
-
                             this.fld_room_feature_beds.setText(output2);
                         }
                     }
