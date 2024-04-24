@@ -1,6 +1,6 @@
 # Patika Turizm Acente Sistemi
 
-![Vacation](turizmAgency/pexels-nubikini-vacation.jpg)
+![Vacation](turizmAgency/pexels-nubikini-vacation.JPG)
 
 Patika Full Stack Web Develpment Bootcamp kapsamında geliştirilen bu turizm acente sistemi uygulamasında temel düzeyde otel yönetimi, sezon yönetimi, oda yönetimi ve rezervasyon işlemleri yapılabilmektedir.
 
