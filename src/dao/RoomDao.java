@@ -13,18 +13,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-
-
 public class RoomDao {
-//    private SeasonManager seasonManager;
-//    private PensionManager pensionManager;
     private HotelManager hotelManager;
     private Connection connection;
 
     public RoomDao() {
-//        this.pensionManager = new PensionManager();
-//        this.seasonManager = new SeasonManager();
-//        this.hotelManager = new HotelManager();
         this.connection = Database.getInstance();
         this.hotelManager = new HotelManager();
     }
@@ -38,10 +31,39 @@ public class RoomDao {
             ResultSet rs = pr.executeQuery();
             if (rs.next()) {
                 obj = this.match(rs);
-//                obj.setSeason(this.seasonManager.getById(obj.getRoomSeasonId()));
-//                obj.setPension(this.pensionManager.getById(obj.getRoomPensionId()));
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
 
+    public Room getByHotelId(int hotelid) {
+        Room obj = null;
+        String query = "SELECT * FROM public.room WHERE room_hotel_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, hotelid);
+            ResultSet rs = pr.executeQuery();
+            if (rs.next()) {
+                obj = this.match(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+
+    public Room getBySeasonId(int seasonId) {
+        Room obj = null;
+        String query = "SELECT * FROM public.room WHERE room_season_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, seasonId);
+            ResultSet rs = pr.executeQuery();
+            if (rs.next()) {
+                obj = this.match(rs);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -77,6 +99,30 @@ public class RoomDao {
         return true;
     }
 
+    public boolean deleteByHotelId(int hotelId) {
+        String query = "DELETE FROM public.room WHERE room_hotel_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, hotelId);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    public boolean deleteBySeasonId(int seasonId) {
+        String query = "DELETE FROM public.room WHERE room_season_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, seasonId);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     public boolean save(Room room) {
         String query = "INSERT INTO public.room (" +
                 "room_hotel_id, " +
@@ -90,8 +136,8 @@ public class RoomDao {
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
             pr.setInt(1, room.getRoomHotelId());
-            pr.setInt(2,room.getSeason().getSeasonId());
-            pr.setInt(3,room.getPension().getPensionId());
+            pr.setInt(2, room.getSeason().getSeasonId());
+            pr.setInt(3, room.getPension().getPensionId());
             pr.setInt(4, room.getRoomStock());
             pr.setInt(5, room.getPriceChild());
             pr.setInt(6, room.getPriceAdult());
@@ -117,21 +163,14 @@ public class RoomDao {
                 "room_type) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
-            PreparedStatement pr = this.connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement pr = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             pr.setInt(1, room.getRoomHotelId());
-            System.out.println(room.getRoomHotelId());
-            pr.setInt(2,room.getSeason().getSeasonId());
-            System.out.println(room.getSeason().getSeasonId());
-            pr.setInt(3,room.getPension().getPensionId());
-            System.out.println(room.getPension().getPensionId());
+            pr.setInt(2, room.getSeason().getSeasonId());
+            pr.setInt(3, room.getPension().getPensionId());
             pr.setInt(4, room.getRoomStock());
-            System.out.println(room.getRoomStock());
             pr.setInt(5, room.getPriceChild());
-            System.out.println(room.getPriceChild());
             pr.setInt(6, room.getPriceAdult());
-            System.out.println(room.getPriceAdult());
             pr.setString(7, String.valueOf(room.getType()));
-            System.out.println(String.valueOf(room.getType()));
             pr.executeUpdate();
             ResultSet generatedKeys = pr.getGeneratedKeys();
 
@@ -150,7 +189,7 @@ public class RoomDao {
     public ArrayList<Room> getRoomsWithDetails(int id) {
         ArrayList<Room> rooms = new ArrayList<>();
         String queryWhere = "";
-        if(id != -1) {
+        if (id != -1) {
             queryWhere = " WHERE room_id = " + id;
         }
 
@@ -177,7 +216,6 @@ public class RoomDao {
                 "LEFT JOIN room_features rf ON r.room_id = rf.room_feature_room_id " +
                 queryWhere +
                 " GROUP BY r.room_id, h.hotel_id, h.hotel_name, s.season_id, s.season_name, p.pension_id, p.pension_types";
-//        System.out.println(query);
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
             ResultSet rs = pr.executeQuery();
@@ -189,16 +227,11 @@ public class RoomDao {
                 room.setPriceChild(rs.getInt("prc_for_child"));
                 room.setType(Room.Type.valueOf(rs.getString("room_type")));
 
-
-                System.out.println(rs.getInt("hotel_id") + "&&&&&&&&");
                 Hotel hotel = new Hotel();
                 hotel.setHotelName(rs.getString("hotel_name"));
                 hotel.setHotelId(rs.getInt("hotel_id"));
-                System.out.println(hotel.getHotelName());
                 hotel = this.hotelManager.getById(hotel.getHotelId());
-                System.out.println(hotel.getHotelFeatures().isEmpty() + "feature listesi boş mu?");
                 room.setHotel(hotel);
-
 
                 Season season = new Season();
                 season.setSeasonName(rs.getString("season_name"));
@@ -210,17 +243,16 @@ public class RoomDao {
                 pension.setPensionType(rs.getString("pension_types"));
                 room.setPension(pension);
 
-                // Separate feature names and values for each room
                 ArrayList<RoomFeature> roomFeaturesList = new ArrayList<>();
                 String[] featureNames = (String[]) rs.getArray("feature_names").getArray();
                 String[] featureValues = (String[]) rs.getArray("feature_values").getArray();
+
                 for (int i = 0; i < featureNames.length; i++) {
                     RoomFeature roomFeature = new RoomFeature();
                     roomFeature.addRoomFeature(featureNames[i], featureValues[i]);
                     roomFeaturesList.add(roomFeature);
                 }
                 room.setRoomFeatures(roomFeaturesList);
-
                 rooms.add(room);
             }
         } catch (SQLException e) {
@@ -241,7 +273,6 @@ public class RoomDao {
                 "WHERE room_id = ?";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-
             pr.setInt(1, room.getRoomHotelId());
             pr.setInt(2, room.getRoomSeasonId());
             pr.setInt(3, room.getRoomPensionId());
@@ -258,7 +289,6 @@ public class RoomDao {
     }
 
     public boolean updateRoomStock(int roomId, int change) {
-        // Oda stoğunu güncelleme sorgusu
         String query = "UPDATE public.room SET room_stock = room_stock + ? WHERE room_id = ?";
         try {
             PreparedStatement ps = connection.prepareStatement(query);
@@ -275,7 +305,6 @@ public class RoomDao {
     }
 
 
-
     public Room match(ResultSet rs) throws SQLException {
         Room room = new Room();
         room.setRoomId(rs.getInt("room_id"));
@@ -286,10 +315,6 @@ public class RoomDao {
         room.setPriceAdult(rs.getInt("prc_for_adult"));
         room.setPriceChild(rs.getInt("prc_for_child"));
         room.setType(Room.Type.valueOf(rs.getString("room_type")));
-//        room.setHotel(this.hotelManager.getById(rs.getInt("room_hotel_id")));
-//        room.setSeason(this.seasonManager.getById(rs.getInt("room_season_id")));
-//        room.setPension(this.pensionManager.getById(rs.getInt("room_pension_id")));
         return room;
     }
-
 }

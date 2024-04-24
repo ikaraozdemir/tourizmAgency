@@ -60,6 +60,7 @@ public class UserDao {
             PreparedStatement pr = this.connection.prepareStatement(query);
             pr.setString(1, username.toLowerCase());
             pr.setString(2, password);
+
             ResultSet rs = pr.executeQuery();
             if (rs.next()) {
                 user = this.match(rs);
@@ -78,13 +79,10 @@ public class UserDao {
                 "VALUES (?,?,?)";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-
             pr.setString(1, String.valueOf(user.getRole()));
             pr.setString(2, user.getName());
             pr.setString(3, user.getPassword());
-
             pr.executeUpdate();
-
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -104,15 +102,12 @@ public class UserDao {
             pr.setString(2, user.getName());
             pr.setString(3, user.getPassword());
             pr.setInt(4, user.getId());
-
             pr.executeUpdate();
-
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
-
     }
 
     public boolean delete(int id) {

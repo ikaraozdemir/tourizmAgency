@@ -26,6 +26,10 @@ public class Helper {
                 msg = "Lütfen tüm alanları doldurunuz !";
                 title = "Hata";
                 break;
+            case "fillSomeAreas":
+                msg = "Lütfen giriş-çıkış tarihi ve misafir sayısı alanlarını doldurunuz !";
+                title = "Hata";
+                break;
             case "done":
                 msg = "İşlem başarılı !";
                 title = "Sonuç";
@@ -36,6 +40,18 @@ public class Helper {
                 break;
             case "error":
                 msg = "Hatalı işlem yaptınız !";
+                title = "Hata";
+                break;
+            case "wrong":
+                msg = "Kullanıcı adı veya şifre yanlış!";
+                title = "Hata";
+                break;
+            case "cannotDelete":
+                msg = "Rezervasyon yapılmış sezonu silemezsiniz !";
+                title = "Hata";
+                break;
+            case "cannotUpdate":
+                msg = "Rezervasyon yapılmış, güncelleyemezsiniz !";
                 title = "Hata";
                 break;
             default:

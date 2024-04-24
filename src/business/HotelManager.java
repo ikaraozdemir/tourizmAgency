@@ -2,10 +2,7 @@ package business;
 
 import core.Helper;
 import dao.HotelDao;
-import entity.Hotel;
-import entity.HotelFeature;
-import entity.Pension;
-import entity.Season;
+import entity.*;
 
 import java.util.ArrayList;
 
@@ -18,7 +15,7 @@ public class HotelManager {
 
     public ArrayList<Object[]> getForTable(int size, ArrayList<Hotel> hotelList) {
         ArrayList<Object[]> hotelObjList = new ArrayList<>();
-        for (Hotel hotel :hotelList) {
+        for (Hotel hotel : hotelList) {
             int i = 0;
             Object[] rowObject = new Object[size];
             rowObject[i++] = hotel.getHotelId();
@@ -34,22 +31,23 @@ public class HotelManager {
             for (Pension pension : hotel.getPensionTypes()) {
                 pensionTypeList.add(pension.getPensionType());
             }
-            String pensionTypes = String.join(", ", pensionTypeList);
 
+            String pensionTypes = String.join(", ", pensionTypeList);
             rowObject[i++] = pensionTypes;
 
             ArrayList<String> hotelFeatureList = new ArrayList<>();
             for (HotelFeature hotelFeature : hotel.getHotelFeatures()) {
                 hotelFeatureList.add(hotelFeature.getHotelFeature());
             }
-            String hotelFeatures = String.join(", ", hotelFeatureList);
 
+            String hotelFeatures = String.join(", ", hotelFeatureList);
             rowObject[i++] = hotelFeatures;
 
             ArrayList<String> seasonNameList = new ArrayList<>();
             for (Season season : hotel.getSeasons()) {
                 seasonNameList.add(season.getSeasonName());
             }
+
             String seasonNames = String.join(", ", seasonNameList);
             rowObject[i++] = seasonNames;
 
@@ -70,7 +68,7 @@ public class HotelManager {
         return this.hotelDao.save(hotel);
     }
 
-    public int saveForId(Hotel hotel){
+    public int saveForId(Hotel hotel) {
         return this.hotelDao.saveForId(hotel);
     }
 
@@ -87,8 +85,6 @@ public class HotelManager {
     public Hotel getById(int id) {
         return this.hotelDao.getById(id);
     }
-
-
 
     public ArrayList<Hotel> findHotelsWithFeatures() {
         return this.hotelDao.findHotelsWithFeatures();
@@ -109,32 +105,4 @@ public class HotelManager {
         }
         return this.hotelDao.delete(hotelId);
     }
-
-
-
-//    public ArrayList<Hotel> searchForTable(int brandId, Model.Fuel fuel, Model.Gear gear, Model.Type type) {
-//
-//        String select = "SELECT * FROM  public.model";
-//        ArrayList<String> whereList = new ArrayList<>();
-//
-//        if (brandId != 0) {
-//            whereList.add("model_brand_id =" + brandId);
-//        }
-//        if (fuel != null) {
-//            whereList.add("model_fuel ='" + fuel.toString() + "'");
-//        }
-//        if (gear != null) {
-//            whereList.add("model_gear = '" + gear.toString() + "'");
-//        }
-//        if (type != null) {
-//            whereList.add("model_type = '" + fuel.toString() + "'");
-//        }
-//
-//        String whereStr = String.join(" AND ", whereList);
-//        String query = select;
-//        if (whereStr.length() > 0) {
-//            query += " WHERE " + whereStr;
-//        }
-//        return this.modelDao.selectByQuery(query);
-//    }
 }

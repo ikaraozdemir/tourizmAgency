@@ -40,7 +40,6 @@ public class UserManager {
             Helper.showMessage("error");
             return false;
         }
-
         return this.userDao.save(user);
     }
 
@@ -51,7 +50,6 @@ public class UserManager {
         }
         return this.userDao.delete(id);
     }
-
 
     public ArrayList<Object[]> getForTable(int size, ArrayList<User> users) {
         ArrayList<Object[]> userList = new ArrayList<>();

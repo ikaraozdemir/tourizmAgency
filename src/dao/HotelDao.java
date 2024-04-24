@@ -1,4 +1,5 @@
 package dao;
+
 import core.Database;
 import entity.Hotel;
 import entity.HotelFeature;
@@ -16,43 +17,26 @@ public class HotelDao {
         this.connection = Database.getInstance();
     }
 
-//    public Hotel getById(int id) {
-//        Hotel hotel = null;
-//        String query = "SELECT * FROM public.hotel WHERE hotel_id = ?";
-//        try {
-//            PreparedStatement pr = this.connection.prepareStatement(query);
-//            pr.setInt(1, id);
-//            ResultSet rs = pr.executeQuery();
-//            if (rs.next()) {
-//                hotel = this.match(rs);
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return hotel;
-//    }
 
-
-        public Hotel getById(int id) {
+    public Hotel getById(int id) {
         Hotel hotel = null;
         String query =
                 "SELECT hotel.* , " +
-                "ARRAY_AGG(DISTINCT pension.pension_types) AS pension_types, " +
-                "ARRAY_AGG(DISTINCT hotel_features.hotel_features) AS hotel_features, " +
-                "ARRAY_AGG(DISTINCT season.season_name) AS season_names " +
-                "FROM hotel " +
-                "LEFT JOIN pension ON hotel.hotel_id = pension.pension_hotel_id " +
-                "LEFT JOIN hotel_features ON hotel.hotel_id = hotel_features.hotel_features_hotel_id " +
-                "LEFT JOIN season ON hotel.hotel_id = season.season_hotel_id " +
-                " WHERE hotel_id = ? " +
-                "GROUP BY hotel.hotel_id;";
+                        "ARRAY_AGG(DISTINCT pension.pension_types) AS pension_types, " +
+                        "ARRAY_AGG(DISTINCT hotel_features.hotel_features) AS hotel_features, " +
+                        "ARRAY_AGG(DISTINCT season.season_name) AS season_names " +
+                        "FROM hotel " +
+                        "LEFT JOIN pension ON hotel.hotel_id = pension.pension_hotel_id " +
+                        "LEFT JOIN hotel_features ON hotel.hotel_id = hotel_features.hotel_features_hotel_id " +
+                        "LEFT JOIN season ON hotel.hotel_id = season.season_hotel_id " +
+                        " WHERE hotel_id = ? " +
+                        "GROUP BY hotel.hotel_id;";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
             pr.setInt(1, id);
             ResultSet rs = pr.executeQuery();
             if (rs.next()) {
                 hotel = this.match(rs);
-                System.out.println(hotel.getHotelName() + "get By ID içinde ");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -68,15 +52,14 @@ public class HotelDao {
 
         return this.selectByQuery(
                 "SELECT hotel.*, " +
-                "ARRAY_AGG(DISTINCT pension.pension_types) AS pension_types, " +
-                "ARRAY_AGG(DISTINCT hotel_features.hotel_features) AS hotel_features, " +
-                "ARRAY_AGG(DISTINCT season.season_name) AS season_names " +
-                "FROM hotel " +
-                "LEFT JOIN pension ON hotel.hotel_id = pension.pension_hotel_id " +
-                "LEFT JOIN hotel_features ON hotel.hotel_id = hotel_features.hotel_features_hotel_id " +
-                "LEFT JOIN season ON hotel.hotel_id = season.season_hotel_id " +
-
-                " GROUP BY hotel.hotel_id;"
+                        "ARRAY_AGG(DISTINCT pension.pension_types) AS pension_types, " +
+                        "ARRAY_AGG(DISTINCT hotel_features.hotel_features) AS hotel_features, " +
+                        "ARRAY_AGG(DISTINCT season.season_name) AS season_names " +
+                        "FROM hotel " +
+                        "LEFT JOIN pension ON hotel.hotel_id = pension.pension_hotel_id " +
+                        "LEFT JOIN hotel_features ON hotel.hotel_id = hotel_features.hotel_features_hotel_id " +
+                        "LEFT JOIN season ON hotel.hotel_id = season.season_hotel_id " +
+                        " GROUP BY hotel.hotel_id;"
         );
     }
 
@@ -93,9 +76,6 @@ public class HotelDao {
         return hotelList;
     }
 
-
-
-
     public boolean save(Hotel hotel) {
         String query = "INSERT INTO public.hotel " +
                 "(" +
@@ -111,7 +91,6 @@ public class HotelDao {
 
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-
             pr.setString(1, hotel.getCity());
             pr.setString(2, hotel.getRegion());
             pr.setString(3, hotel.getHotelName());
@@ -142,7 +121,6 @@ public class HotelDao {
 
         try {
             PreparedStatement pr = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-
             pr.setString(1, hotel.getCity());
             pr.setString(2, hotel.getRegion());
             pr.setString(3, hotel.getHotelName());
@@ -153,8 +131,6 @@ public class HotelDao {
             pr.executeUpdate();
             ResultSet generatedKeys = pr.getGeneratedKeys();
             if (generatedKeys.next()) {
-                System.out.println(generatedKeys.getInt(1) + " otel");
-
                 generatedId = generatedKeys.getInt(1);
             } else {
                 throw new SQLException("Otel ekleme başarısız, otel id alınamadı.");
@@ -164,7 +140,6 @@ public class HotelDao {
         }
         return generatedId;
     }
-
 
     public boolean update(Hotel hotel) {
         String query = "UPDATE public.hotel SET " +
@@ -178,7 +153,6 @@ public class HotelDao {
                 "WHERE hotel_id = ?";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-
             pr.setString(1, hotel.getCity());
             pr.setString(2, hotel.getRegion());
             pr.setString(3, hotel.getHotelName());
@@ -206,7 +180,6 @@ public class HotelDao {
         return true;
     }
 
-
     public Hotel match(ResultSet rs) throws SQLException {
         Hotel hotel = new Hotel();
 
@@ -224,15 +197,13 @@ public class HotelDao {
             String[] pensionTypes = (String[]) pensionTypesArray.getArray();
             ArrayList<Pension> pensionList = new ArrayList<>();
             for (String pensionType : pensionTypes) {
-                Pension pension =new Pension();
+                Pension pension = new Pension();
                 pension.setPensionType(pensionType);
-//                System.out.println(pension.getPensionType());
                 pensionList.add(pension);
             }
             hotel.setPensionTypes(pensionList);
         }
 
-        // season_names sütununu işleme
         Array seasonNamesArray = rs.getArray("season_names");
         if (seasonNamesArray != null) {
             String[] seasonNames = (String[]) seasonNamesArray.getArray();
@@ -245,7 +216,6 @@ public class HotelDao {
             hotel.setSeasons(seasonList);
         }
 
-        // hotel_features sütununu işleme
         Array hotelFeaturesArray = rs.getArray("hotel_features");
         if (hotelFeaturesArray != null) {
             String[] hotelFeatureList = (String[]) hotelFeaturesArray.getArray();
@@ -257,9 +227,7 @@ public class HotelDao {
             }
             hotel.setHotelFeatures(featureList);
         }
-
         return hotel;
     }
-
 }
 

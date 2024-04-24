@@ -27,8 +27,11 @@ public class LoginView extends Layout {
                 Helper.showMessage("fill");
             } else {
                 User loginUser = this.userManager.findByLogin(this.fld_username.getText(), this.fld_pw.getText());
-                System.out.println(loginUser.getRole());
-                if (loginUser.getId() == 0 || loginUser == null) {
+                if (loginUser == null){
+                    Helper.showMessage("wrong");
+                    return;
+                }
+                if (loginUser.getId() == 0 ) {
                     Helper.showMessage("notFound");
                 } else if (loginUser.getRole().toString().equals("ADMIN")) {
                     new AdminView(loginUser);

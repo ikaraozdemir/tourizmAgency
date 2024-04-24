@@ -14,7 +14,6 @@ public class RoomFeature {
 
     }
 
-
     public void addRoomFeature(String key, Object value) {
         roomFeature.put(key, value);
     }

@@ -1,7 +1,5 @@
 package entity;
 
-import java.util.ArrayList;
-
 public class Pension {
 
     private int pensionId;

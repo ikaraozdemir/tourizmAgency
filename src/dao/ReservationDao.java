@@ -27,7 +27,38 @@ public class ReservationDao {
             if (rs.next()) {
                 obj = this.match(rs);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
 
+    public Reservation getByRoomId(int roomId ) {
+        Reservation obj = null;
+        String query = "SELECT * FROM public.reservation WHERE reserv_room_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, roomId);
+            ResultSet rs = pr.executeQuery();
+            if (rs.next()) {
+                obj = this.match(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+
+    public Reservation getByHotelId(int hotelId ) {
+        Reservation obj = null;
+        String query = "SELECT * FROM public.reservation WHERE reserv_hotel_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, hotelId);
+            ResultSet rs = pr.executeQuery();
+            if (rs.next()) {
+                obj = this.match(rs);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -71,7 +102,6 @@ public class ReservationDao {
 
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-
             pr.setInt(1, reservation.getReservRoomId());
             pr.setInt(2, reservation.getAdultCount());
             pr.setInt(3, reservation.getChildCount());
@@ -108,7 +138,6 @@ public class ReservationDao {
                 "WHERE reserv_id = ?";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-
             pr.setInt(1, reservation.getReservRoomId());
             pr.setInt(2, reservation.getAdultCount());
             pr.setInt(3, reservation.getChildCount());
@@ -142,6 +171,30 @@ public class ReservationDao {
         return true;
     }
 
+    public boolean deleteByRoomId(int roomId) {
+        String query = "DELETE FROM public.reservation WHERE reserv_room_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, roomId);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    public boolean deleteByHotelId(int hotelId) {
+        String query = "DELETE FROM public.reservation WHERE reserv_hotel_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, hotelId);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     public Reservation match(ResultSet rs) throws SQLException {
         Reservation reservation = new Reservation();
         reservation.setReservId(rs.getInt("reserv_id"));
@@ -157,9 +210,7 @@ public class ReservationDao {
         reservation.setCheckinDate(rs.getDate("checkin_date").toLocalDate());
         reservation.setCheckOutDate(rs.getDate("checkout_date").toLocalDate());
         reservation.setReservHotelId(rs.getInt("reserv_hotel_id"));
-//        reservation.setRoom(this.roomManager.getById(rs.getInt("reserv_room_id")));
-//        reservation.setHotel(this.hotelManager.getById(rs.getInt("reserv_hotel_id")));
+
         return reservation;
     }
-
 }

@@ -12,8 +12,6 @@ import entity.Pension;
 import entity.Season;
 
 import javax.swing.*;
-import javax.swing.text.MaskFormatter;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,7 +32,6 @@ public class HotelView extends Layout {
     private JCheckBox yuzmeHavuzu_cb;
     private JCheckBox ucretsizWifi_cb;
     private JCheckBox SPA_cb;
-
     private JCheckBox ultraHerseyDahil_cb;
     private JCheckBox odaKahvalti_cb;
     private JCheckBox yarimPansiyon_cb;
@@ -96,7 +93,7 @@ public class HotelView extends Layout {
             for (JCheckBox checkBox : cbHotelFeatures) {
                 for (HotelFeature feature : featuresFromDb) {
                     if (checkBox.getText().equalsIgnoreCase(feature.getHotelFeature())) {
-                        checkBox.setSelected(true); // Eşleşen checkbox'ı seçili hale getirin
+                        checkBox.setSelected(true);
                     }
                 }
             }
@@ -105,7 +102,7 @@ public class HotelView extends Layout {
             for (JCheckBox checkBox : cbPension) {
                 for (Pension pension : pensionsFromDb) {
                     if (checkBox.getText().equalsIgnoreCase(pension.getPensionType())) {
-                        checkBox.setSelected(true); // Eşleşen checkbox'ı seçili hale getirin
+                        checkBox.setSelected(true);
                     }
                 }
             }
@@ -128,7 +125,7 @@ public class HotelView extends Layout {
                     fld_hotel_name, fld_hotel_phno, fld_hotel_mail, fld_hotel_star, fld_hotel_address})) {
                 Helper.showMessage("fill");
             } else {
-                boolean result = false;
+                boolean result;
                 boolean result2 = false;
                 boolean result3 = false;
                 boolean result4 = false;
@@ -167,8 +164,6 @@ public class HotelView extends Layout {
                     seasons.add(summerSeason);
                 }
                 this.hotel.setSeasons(seasons);
-
-
 
                 ArrayList<HotelFeature> selectedFeatures = new ArrayList<>();
                 for (JCheckBox checkBox : cbHotelFeatures) {
@@ -256,7 +251,6 @@ public class HotelView extends Layout {
         fld_summer_start.setText("01/06/2024");
         fld_summer_end.setText("31/12/2024");
     }
-
 
 }
 

@@ -1,7 +1,5 @@
 package dao;
 
-
-
 import core.Database;
 import entity.HotelFeature;
 
@@ -50,7 +48,7 @@ public class HotelFeatureDao {
     }
 
     public HotelFeature match(ResultSet rs) throws SQLException {
-        HotelFeature hotelFeature= new HotelFeature();
+        HotelFeature hotelFeature = new HotelFeature();
         hotelFeature.setHotelFeatureHotelId(rs.getInt("hotel_features_id"));
         hotelFeature.setHotelFeatureHotelId(rs.getInt("hotel_features_hotel_id"));
         hotelFeature.setHotelFeature(rs.getString("hotel_features"));
@@ -64,8 +62,8 @@ public class HotelFeatureDao {
                 "WHERE hotel_features_hotel_id = ?";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-            pr.setString(1,hotelFeature.getHotelFeature());
-            pr.setInt(2,hotelFeature.getHotelFeatureHotelId());
+            pr.setString(1, hotelFeature.getHotelFeature());
+            pr.setInt(2, hotelFeature.getHotelFeatureHotelId());
 
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
@@ -81,11 +79,9 @@ public class HotelFeatureDao {
                 "VALUES (?, ?)";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-
-                pr.setInt(1, hotelFeature.getHotelFeatureHotelId());
-                pr.setString(2, hotelFeature.getHotelFeature());
-                pr.executeUpdate();
-
+            pr.setInt(1, hotelFeature.getHotelFeatureHotelId());
+            pr.setString(2, hotelFeature.getHotelFeature());
+            pr.executeUpdate();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -103,11 +99,8 @@ public class HotelFeatureDao {
             while (rs.next()) {
                 HotelFeature feature = new HotelFeature();
                 feature.setHotelFeatureId(rs.getInt("hotel_features_id"));
-//                System.out.println(feature.getHotelFeatureId());
                 feature.setHotelFeature(rs.getString("hotel_features"));
-//                System.out.println(feature.getHotelFeature());
                 feature.setHotelFeatureHotelId(rs.getInt("hotel_features_hotel_id"));
-//                System.out.println(feature.getHotelFeatureHotelId());
                 selectedFeatures.add(feature);
             }
         } catch (SQLException e) {

@@ -112,10 +112,6 @@ public class Reservation {
         this.reservNote = reservNote;
     }
 
-    public int getTotalDayCount() {
-        return totalDayCount;
-    }
-
     public void setTotalDayCount(int totalDayCount) {
         this.totalDayCount = totalDayCount;
     }

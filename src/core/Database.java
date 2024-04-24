@@ -22,12 +22,12 @@ public class Database {
             String DB_URL = props.getProperty("db.url");
             String DB_USERNAME = props.getProperty("db.user");
             String DB_PASSWORD = props.getProperty("db.password");
-            this.connection = DriverManager.getConnection(DB_URL,DB_USERNAME,DB_PASSWORD);
-        } catch (SQLException e){
+            this.connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

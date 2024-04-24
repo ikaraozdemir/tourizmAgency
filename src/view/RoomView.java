@@ -42,13 +42,13 @@ public class RoomView extends Layout {
     private final ArrayList<JCheckBox> cbRoomFeatures = new ArrayList<>();
 
 
-    public RoomView(Room room, Hotel hotel){
+    public RoomView(Room room, Hotel hotel) {
         this.roomManager = new RoomManager();
         this.pensionManager = new PensionManager();
         this.seasonManager = new SeasonManager();
         this.roomFeatureManager = new RoomFeatureManager();
         this.add(container);
-        this.guiInitialize(700,700);
+        this.guiInitialize(700, 700);
         this.room = room;
         this.hotel = hotel;
 
@@ -66,13 +66,13 @@ public class RoomView extends Layout {
             this.cmb_season_name.addItem(season.getSeasonName());
         }
 
-        cbRoomFeatures.addAll(Arrays.asList(tv_cb,kasa_cb,minibar_cb,projeksiyon_cb,konsol_cb));
+        cbRoomFeatures.addAll(Arrays.asList(tv_cb, kasa_cb, minibar_cb, projeksiyon_cb, konsol_cb));
 
         if (this.room.getRoomId() != 0) {
-              this.fld_room_stock.setText(String.valueOf(this.room.getRoomStock()));
-              this.fld_room_adult_prc.setText(String.valueOf(this.room.getPriceAdult()));
-              this.fld_room_child_prc.setText(String.valueOf(this.room.getPriceChild()));
-             ArrayList<RoomFeature> featuresFromDb =  roomFeatureManager.getFeaturesByRoomId(this.room.getRoomId());
+            this.fld_room_stock.setText(String.valueOf(this.room.getRoomStock()));
+            this.fld_room_adult_prc.setText(String.valueOf(this.room.getPriceAdult()));
+            this.fld_room_child_prc.setText(String.valueOf(this.room.getPriceChild()));
+            ArrayList<RoomFeature> featuresFromDb = roomFeatureManager.getFeaturesByRoomId(this.room.getRoomId());
 
             for (JCheckBox checkBox : cbRoomFeatures) {
                 for (RoomFeature feature : featuresFromDb) {
@@ -84,7 +84,7 @@ public class RoomView extends Layout {
                         String output2 = feature.getRoomFeature().values().iterator().next().toString();
                         if (output.equals("Oda Boyutu (metrekare):")) {
                             this.fld_room_feature_size.setText(String.valueOf(output2));
-                        } else if (output.equals("Yatak Sayısı:")){
+                        } else if (output.equals("Yatak Sayısı:")) {
                             this.fld_room_feature_beds.setText(output2);
                         }
                     }
@@ -100,7 +100,7 @@ public class RoomView extends Layout {
             if (Helper.isFieldListEmpty(new JTextField[]{this.fld_room_adult_prc, fld_room_child_prc, fld_room_stock, fld_room_feature_size, fld_room_feature_beds})) {
                 Helper.showMessage("fill");
             } else {
-                boolean result = false;
+                boolean result;
                 boolean result2 = false;
                 this.room.setHotel(this.hotel);
                 this.room.setRoomHotelId(this.hotel.getHotelId());
@@ -112,17 +112,17 @@ public class RoomView extends Layout {
 
 
                 RoomFeature featureFromTextBox1 = new RoomFeature();
-                featureFromTextBox1.addRoomFeature(lbl_room_size.getText(),fld_room_feature_size.getText());
+                featureFromTextBox1.addRoomFeature(lbl_room_size.getText(), fld_room_feature_size.getText());
                 selectedFeatures.add(featureFromTextBox1);
 
                 RoomFeature featureFromTextBox2 = new RoomFeature();
-                featureFromTextBox2.addRoomFeature(lbl_beds.getText(),fld_room_feature_beds.getText());
+                featureFromTextBox2.addRoomFeature(lbl_beds.getText(), fld_room_feature_beds.getText());
                 selectedFeatures.add(featureFromTextBox2);
 
                 for (JCheckBox checkBox : cbRoomFeatures) {
                     if (checkBox.isSelected()) {
                         RoomFeature feature = new RoomFeature();
-                        feature.addRoomFeature(checkBox.getText(),"var");
+                        feature.addRoomFeature(checkBox.getText(), "var");
                         feature.setRoomFeatureRoomId(this.room.getRoomId());
                         selectedFeatures.add(feature);
                     }
@@ -130,26 +130,26 @@ public class RoomView extends Layout {
                 this.room.setRoomFeatures(selectedFeatures);
                 this.room.setType((Room.Type) this.cmb_room_type.getSelectedItem());
 
-                for (Pension pension: pensions){
-                    if (pension.getPensionType().equals(cmb_pension_type.getSelectedItem())){
+                for (Pension pension : pensions) {
+                    if (pension.getPensionType().equals(cmb_pension_type.getSelectedItem())) {
                         this.room.setPension(pension);
                     }
                 }
 
-                for (Season season: seasons){
-                    if (season.getSeasonName().equals(cmb_season_name.getSelectedItem())){
+                for (Season season : seasons) {
+                    if (season.getSeasonName().equals(cmb_season_name.getSelectedItem())) {
                         this.room.setSeason(season);
                     }
                 }
 
-                if (this.room.getRoomId() != 0){
+                if (this.room.getRoomId() != 0) {
                     result = this.roomManager.update(this.room);
                     this.roomFeatureManager.delete(this.room.getRoomId());
                     for (RoomFeature feature : selectedFeatures) {
                         feature.setRoomFeatureRoomId(this.room.getRoomId());
                         result2 = roomFeatureManager.save(feature);
                     }
-                    if (this.room.getRoomId() != 0 && result) {
+                    if (this.room.getRoomId() != 0 && result && result2) {
                         Helper.showMessage("done");
                         dispose();
                     } else {
@@ -164,19 +164,15 @@ public class RoomView extends Layout {
                             result2 = this.roomFeatureManager.save(feature);
                         }
                     }
-                    if ( result2) {
+                    if (result2) {
                         Helper.showMessage("done");
                         dispose();
                     } else {
                         Helper.showMessage("error");
                     }
                     dispose();
-
                 }
-
             }
         });
-
     }
-
 }

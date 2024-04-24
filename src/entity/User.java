@@ -16,7 +16,6 @@ public class User {
         this.password = password;
     }
 
-
     public enum Role {
         ADMIN,
         EMPLOYEE

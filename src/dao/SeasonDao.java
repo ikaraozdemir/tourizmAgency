@@ -30,6 +30,7 @@ public class SeasonDao {
         }
         return obj;
     }
+
     public ArrayList<Season> findAll() {
         return this.selectByQuery("SELECT * FROM public.season ORDER BY season_id ASC");
     }
@@ -48,13 +49,12 @@ public class SeasonDao {
     }
 
     public Season match(ResultSet rs) throws SQLException {
-        Season season= new Season();
+        Season season = new Season();
         season.setSeasonId(rs.getInt("season_id"));
         season.setSeasonHotelId(rs.getInt("season_hotel_id"));
         season.setStrtDate(LocalDate.parse(rs.getString("season_start")));
         season.setEndDate(LocalDate.parse(rs.getString("season_end")));
         season.setSeasonName(rs.getString("season_name"));
-
         return season;
     }
 
@@ -67,14 +67,11 @@ public class SeasonDao {
                 "VALUES (?,?,?,?)";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-
             pr.setInt(1, season.getSeasonHotelId());
             pr.setDate(2, Date.valueOf(season.getStrtDate()));
             pr.setDate(3, Date.valueOf(season.getEndDate()));
             pr.setString(4, season.getSeasonName());
-
             pr.executeUpdate();
-
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -105,30 +102,7 @@ public class SeasonDao {
 
     }
 
-//    public boolean update(Season season) {
-//        String query = "UPDATE public.season SET " +
-//                "season_hotel_id = ? , " +
-//                "season_start = ? , " +
-//                "season_end = ? , " +
-//                "season_name = ? , " +
-//                "WHERE season_id = ?";
-//        try {
-//            PreparedStatement pr = this.connection.prepareStatement(query);
-//            pr.setInt(1, season.getSeasonHotelId());
-//            pr.setDate(2, Date.valueOf(season.getStrtDate()));
-//            pr.setDate(3, Date.valueOf(season.getEndDate()));
-//            pr.setString(4, season.getSeasonName());
-//            pr.setString(5, season.getSeasonId());
-//
-//
-//            return pr.executeUpdate() != -1;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return true;
-//    }
-
-    public boolean delete(int hotelId) {
+    public boolean deleteByHotelId(int hotelId) {
         String query = "DELETE FROM public.season WHERE season_hotel_id = ?";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
@@ -140,6 +114,15 @@ public class SeasonDao {
         return true;
     }
 
-
-
+    public boolean delete(int seasonId) {
+        String query = "DELETE FROM public.season WHERE season_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, seasonId);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 }

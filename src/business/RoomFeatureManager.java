@@ -41,6 +41,4 @@ public class RoomFeatureManager {
         }
         return this.roomFeatureDao.delete(roomId);
     }
-
-
 }

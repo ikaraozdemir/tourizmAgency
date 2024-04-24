@@ -41,7 +41,7 @@ public class RoomFeatureDao {
         try {
             ResultSet rs = this.connection.createStatement().executeQuery(query);
             while (rs.next()) {
-               roomFeatures.add(this.match(rs));
+                roomFeatures.add(this.match(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -59,14 +59,14 @@ public class RoomFeatureDao {
             PreparedStatement pr = this.connection.prepareStatement(query);
 
             String featureKey = roomFeature.getRoomFeature().keySet().toString();
-            String featureKeyCleaned =  featureKey.substring(1, featureKey.length() - 1);
+            String featureKeyCleaned = featureKey.substring(1, featureKey.length() - 1);
 
             String featureValue = roomFeature.getRoomFeature().values().toString();
-            String featureValueCleaned =  featureValue.substring(1, featureValue.length() - 1);
+            String featureValueCleaned = featureValue.substring(1, featureValue.length() - 1);
 
             pr.setInt(1, roomFeature.getRoomFeatureRoomId());
             pr.setString(2, featureKeyCleaned);
-            pr.setString(3,featureValueCleaned);
+            pr.setString(3, featureValueCleaned);
             pr.executeUpdate();
 
             return true;
@@ -76,11 +76,10 @@ public class RoomFeatureDao {
         }
     }
 
-
-
     public ArrayList<RoomFeature> getFeaturesByRoomId(int roomId) {
         ArrayList<RoomFeature> selectedFeatures = new ArrayList<>();
         String query = "SELECT * FROM public.room_features WHERE room_feature_room_id = ?";
+
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
             pr.setInt(1, roomId);
@@ -89,20 +88,17 @@ public class RoomFeatureDao {
                 RoomFeature feature = new RoomFeature();
                 feature.setRoomFeatureId(rs.getInt("room_feature_id"));
                 feature.setRoomFeatureRoomId(rs.getInt("room_feature_room_id"));
-                feature.addRoomFeature(rs.getString("feature_name"),rs.getString("feature_value"));
+                feature.addRoomFeature(rs.getString("feature_name"), rs.getString("feature_value"));
                 selectedFeatures.add(feature);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return selectedFeatures;
-
     }
 
-
-
     public RoomFeature match(ResultSet rs) throws SQLException {
-        RoomFeature roomFeature= new RoomFeature();
+        RoomFeature roomFeature = new RoomFeature();
         roomFeature.setRoomFeatureId(rs.getInt("room_feature_id"));
         roomFeature.setRoomFeatureRoomId(rs.getInt("room_feature_room_id"));
         return roomFeature;
@@ -119,5 +115,4 @@ public class RoomFeatureDao {
         }
         return true;
     }
-
 }

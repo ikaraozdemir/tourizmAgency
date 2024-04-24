@@ -1,14 +1,12 @@
 package view;
-import business.SeasonManager;
+
 import business.UserManager;
 import core.Helper;
 import entity.*;
 
 import javax.swing.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
 
-public class UserView extends Layout{
+public class UserView extends Layout {
     private JTextField fld_user_name;
     private JComboBox cmb_user_role;
     private JTextField fld_user_pw;
@@ -22,10 +20,9 @@ public class UserView extends Layout{
         this.userManager = new UserManager();
         this.add(container);
         this.user = user;
-        this.guiInitialize(700, 700);
+        this.guiInitialize(700, 500);
 
         this.cmb_user_role.setModel(new DefaultComboBoxModel<>(User.Role.values()));
-
 
         if (this.user.getId() != 0) {
             this.fld_user_name.setText(this.user.getName());
@@ -37,17 +34,15 @@ public class UserView extends Layout{
             if (Helper.isFieldListEmpty(new JTextField[]{this.fld_user_name, fld_user_pw})) {
                 Helper.showMessage("fill");
             } else {
-                boolean result = false;
+                boolean result;
                 boolean result2 = false;
-                boolean result3 = false;
-                boolean result4 = false;
+
 
                 this.user.setName(fld_user_name.getText());
                 this.user.setPassword(fld_user_pw.getText());
                 this.user.setRole((User.Role) this.cmb_user_role.getSelectedItem());
 
-
-                //güncelle
+                //kullanıcı güncelleme
                 if (this.user.getId() != 0) {
                     result = this.userManager.update(this.user);
                     if (result) {
@@ -58,15 +53,14 @@ public class UserView extends Layout{
                         Helper.showMessage("error");
                     }
                     dispose();
-                    //yeni kullanıcı ekle
+                    //yeni kullanıcı ekleme
                 } else {
                     if (this.user.getId() == 0) {
                         result2 = userManager.save(user);
                     }
 
-                    if ( result2) {
+                    if (result2) {
                         Helper.showMessage("done");
-
                         dispose();
                     } else {
                         Helper.showMessage("error");

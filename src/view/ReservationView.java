@@ -31,16 +31,16 @@ public class ReservationView extends Layout {
     private JLabel lbl_reserv_season;
     private JLabel lbl_reserv_hotel_features;
     private JLabel lbl_reserv_hotel_name;
-    private Room room;
-    private Reservation reservation;
-    private HotelManager hotelManager;
-    private ReservationManager reservationManager;
+    private final Room room;
+    private final Reservation reservation;
+    private final ReservationManager reservationManager;
     private String adult;
     private String child;
     private String checkIn;
     private String checkOut;
 
     public ReservationView(Reservation reservation, Room room, String adult,String child, String checkIn, String checkOut) {
+
         this.add(container);
         this.guiInitialize(700, 700);
         this.reservationManager = new ReservationManager();
@@ -51,6 +51,8 @@ public class ReservationView extends Layout {
         this.checkOut = checkOut;
         this.reservation = reservation;
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
         this.lbl_reserv_hotel_name.setText("<html><b>Otel:</b> " + room.getHotel().getHotelName() + "</html>");
         this.lbl_reserv_room.setText("<html><b>Oda Tipi:</b> " + room.getPension().getPensionType() +"</html>");
         this.lbl_resrv_child.setText("<html><b>Çocuk Sayısı:</b> " + child + "</html>");
@@ -58,9 +60,8 @@ public class ReservationView extends Layout {
         this.lbl_checkout.setText("<html><b>Check-out:</b> " + this.checkOut + "</html>");
         this.lbl_checkin.setText("<html><b>Check-in:</b> " + this.checkIn + "</html>");
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate dateIn = LocalDate.parse(checkIn, formatter);
-        LocalDate dateOut = LocalDate.parse(checkOut, formatter);
+        LocalDate dateIn = LocalDate.parse(this.checkIn, formatter);
+        LocalDate dateOut = LocalDate.parse(this.checkOut, formatter);
         int totalDays =  (int) ChronoUnit.DAYS.between(dateIn, dateOut);
         int totalChildAdultPrice = Integer.parseInt(adult)  * room.getPriceAdult() + Integer.parseInt(child)  * room.getPriceChild();
         int totalPrice =  totalChildAdultPrice * totalDays;
@@ -140,9 +141,8 @@ public class ReservationView extends Layout {
                     } else {
                         Helper.showMessage("error");
                     }
-
-                dispose();
                 }  else {
+                    //yeni
                     if (this.reservation.getReservId() == 0) {
                         result2 = this.reservationManager.save(this.reservation);
                     }
@@ -152,10 +152,7 @@ public class ReservationView extends Layout {
                     } else {
                         Helper.showMessage("error");
                     }
-                    FilteredRoomView filteredRoomView = new FilteredRoomView(adult,child,checkIn,checkOut);
-                    filteredRoomView.dispose();
-                    EmployeeView employeeView = new EmployeeView();
-                    employeeView.loadRoomTable();
+
                 }
             }
         });

@@ -49,7 +49,7 @@ public class PensionDao {
     }
 
     public Pension match(ResultSet rs) throws SQLException {
-        Pension pension= new Pension();
+        Pension pension = new Pension();
         pension.setPensionId(rs.getInt("pension_id"));
         pension.setPensionHotelId(rs.getInt("pension_hotel_id"));
         pension.setPensionType(rs.getString("pension_types"));
@@ -69,7 +69,6 @@ public class PensionDao {
         return true;
     }
 
-
     public boolean save(Pension pension) {
         String query = "INSERT INTO public.pension (" +
                 "pension_hotel_id, " +
@@ -78,9 +77,9 @@ public class PensionDao {
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
 
-                pr.setInt(1, pension.getPensionHotelId());
-                pr.setString(2, pension.getPensionType());
-                pr.executeUpdate();
+            pr.setInt(1, pension.getPensionHotelId());
+            pr.setString(2, pension.getPensionType());
+            pr.executeUpdate();
 
             return true;
         } catch (SQLException e) {
@@ -118,8 +117,8 @@ public class PensionDao {
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
             pr.setInt(1, pension.getPensionHotelId());
-            pr.setString(2,pension.getPensionType());
-            pr.setInt(3,pension.getPensionId());
+            pr.setString(2, pension.getPensionType());
+            pr.setInt(3, pension.getPensionId());
 
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
@@ -127,16 +126,4 @@ public class PensionDao {
         }
         return true;
     }
-
-//    public boolean delete(int carId) {
-//        String query = "DELETE FROM public.car WHERE car_id = ?";
-//        try {
-//            PreparedStatement pr = this.connection.prepareStatement(query);
-//            pr.setInt(1, carId);
-//            return pr.executeUpdate() != -1;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return true;
-//    }
 }

@@ -1,14 +1,16 @@
 package view;
+
 import business.UserManager;
 import core.Helper;
 import entity.User;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
-public class AdminView extends Layout{
+public class AdminView extends Layout {
     private JPanel container;
     private JButton btn_user_logout;
     private JTabbedPane tabbedPane1;
@@ -19,15 +21,16 @@ public class AdminView extends Layout{
     private final UserManager userManager;
     private Object[] col_user;
 
-    public AdminView (User user) {
+    public AdminView(User user) {
         this.userManager = new UserManager();
         this.add(container);
-        this.guiInitialize(700,500);
+        this.guiInitialize(700, 500);
         this.user = user;
         if (this.user == null) {
             dispose();
         }
         this.lbl_welcome.setText("<html><b>Hoşgeldiniz</b> " + this.user.getName() + "</html>");
+
         loadUserTable();
         loadUserComponent();
 
@@ -57,7 +60,7 @@ public class AdminView extends Layout{
         });
 
         user_menu.add("Güncelle").addActionListener(e -> {
-            int selectedUserId = this.getTableSelectedRow(tbl_users,0);
+            int selectedUserId = this.getTableSelectedRow(tbl_users, 0);
             UserView userView = new UserView(this.userManager.getById(selectedUserId));
             userView.addWindowListener(new WindowAdapter() {
                 @Override
@@ -67,13 +70,14 @@ public class AdminView extends Layout{
                 }
             });
         });
+
         user_menu.add("Sil").addActionListener(e -> {
-            if (Helper.confirm("sure")){
-                int selectUsertId = this.getTableSelectedRow(tbl_users,0);
-                if (this.userManager.delete(selectUsertId)){
+            if (Helper.confirm("sure")) {
+                int selectUsertId = this.getTableSelectedRow(tbl_users, 0);
+                if (this.userManager.delete(selectUsertId)) {
                     Helper.showMessage("done");
                     loadUserTable();
-                }else{
+                } else {
                     Helper.showMessage("error");
                 }
             }
@@ -81,10 +85,10 @@ public class AdminView extends Layout{
         this.tbl_users.setComponentPopupMenu(user_menu);
     }
 
-    private void loadComponent () {
+    private void loadComponent() {
         this.btn_user_logout.addActionListener(e -> {
             dispose();
-             new LoginView();
+            new LoginView();
         });
     }
 }

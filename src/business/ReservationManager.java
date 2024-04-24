@@ -4,6 +4,7 @@ import core.Helper;
 import dao.ReservationDao;
 import entity.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class ReservationManager {
             Helper.showMessage("error");
             return false;
         }
-        // Oda stoğunu güncelle
+        // Oda stoğunu güncelleme
         int roomId = reservation.getReservRoomId();
         if (this.roomManager.updateRoomStock(roomId, -1) && this.reservationDao.save(reservation)) {
             return true;
@@ -52,44 +53,66 @@ public class ReservationManager {
         }
         int roomId = reservation.getReservRoomId();
 
-        return this.reservationDao.delete(id) && this.roomManager.updateRoomStock(roomId,1);
+        return this.reservationDao.delete(id) && this.roomManager.updateRoomStock(roomId, 1);
+    }
 
+    public boolean deleteByRoomId(int roomId) {
+        Reservation reservation = this.getByRoomId(roomId);
+        if (reservation == null) {
+            Helper.showMessage("kayıt bulunamadı");
+            return false;
+        }
+        return this.reservationDao.deleteByRoomId(roomId);
+    }
+
+    public boolean deleteByHotelId(int hotelId) {
+        Reservation reservation = this.getByHotelId(hotelId);
+        if (reservation == null) {
+            Helper.showMessage("kayıt bulunamadı");
+            return false;
+        }
+        return this.reservationDao.deleteByHotelId(hotelId);
+    }
+
+    public Reservation getByRoomId(int roomId) {
+        return this.reservationDao.getByRoomId(roomId);
+    }
+
+    public Reservation getByHotelId(int hotelId) {
+        return this.reservationDao.getByHotelId(hotelId);
     }
 
     public ArrayList<Reservation> findAll() {
         return this.reservationDao.findAll();
     }
 
-
     public ArrayList<Object[]> getForTable(int size, ArrayList<Reservation> reservList) {
-
 
         ArrayList<Object[]> reservObjList = new ArrayList<>();
 
-        for (Reservation reservation :reservList) {
+        for (Reservation reservation : reservList) {
+
             Hotel hotel = this.hotelManager.getById(reservation.getReservHotelId());
             ArrayList<Room> rooms = this.roomManager.getRoomsWithDetails(reservation.getReservRoomId());
 
             StringBuilder hotelFeatures = new StringBuilder();
             String roomType = "";
 
-
             for (HotelFeature hotelFeature : hotel.getHotelFeatures()) {
                 hotelFeatures.append(hotelFeature).append(", ");
             }
-
-
-            for (Room room: rooms ){
-               roomType = room.getType().toString();
+            for (Room room : rooms) {
+                roomType = room.getType().toString();
             }
 
             int i = 0;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             Object[] rowObject = new Object[size];
             rowObject[i++] = reservation.getReservId();
             rowObject[i++] = hotel.getHotelName();
             rowObject[i++] = roomType;
-            rowObject[i++] = reservation.getCheckinDate();
-            rowObject[i++] = reservation.getCheckOutDate();
+            rowObject[i++] = reservation.getCheckinDate().format(formatter);
+            rowObject[i++] = reservation.getCheckOutDate().format(formatter);
             rowObject[i++] = reservation.getGuestIdno();
             rowObject[i++] = reservation.getGuestName();
             rowObject[i++] = reservation.getGuestMpno();
