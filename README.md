@@ -46,5 +46,5 @@ Patika Full Stack Web Develpment Bootcamp kapsamında geliştirilen bu turizm ac
 
 ## Yapılamayanlar
 
-Normalde çalışan programımım video çekmek için çalıştırdığımda NullPointerException hata verdi. Zamanım olmadığı için bu şekilde yüklüyorum.
+Normalde hatasız çalışan programım video çekmek için çalıştırdığımda NullPointerException hatası verdi. Zamanım olmadığı için bu şekilde yüklüyorum.
 Revizyonda video ile birlikte yükleyeceğim.
