@@ -1,6 +1,6 @@
 # Patika Tourism Agency System
 
-![Vacation](secreenshots/pexels-nubikini-vacation.JPG)
+![Vacation](secreenshots/vacation.JPG)
 
 In this tourism agency system application developed within the scope of the Patika Full Stack Web Development Bootcamp, basic level hotel management, season management, room management, and reservation processes can be performed.
 ## Technologies
