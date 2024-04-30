@@ -30,7 +30,7 @@ public class RoomManager {
         return this.roomDao.getById(id);
     }
 
-    public Room getByHotelId(int hotelId) {
+    public ArrayList<Room> getByHotelId(int hotelId) {
         return this.roomDao.getByHotelId(hotelId);
     }
 
@@ -42,8 +42,8 @@ public class RoomManager {
         return this.roomDao.findAll();
     }
 
-    public ArrayList<Room> getRoomsWithDetails(Integer id) {
-        return this.roomDao.getRoomsWithDetails(id);
+    public ArrayList<Room> getRoomsWithDetails(Integer id, boolean isHotelId) {
+        return this.roomDao.getRoomsWithDetails(id, isHotelId);
     }
 
     public boolean save(Room room) {
@@ -236,7 +236,7 @@ public class RoomManager {
         ArrayList<Room> searchedRoomListUpdated = new ArrayList<>();
 
         for (Room room : searchedRoomList) {
-            ArrayList<Room> roomsWithDetails0 = this.getRoomsWithDetails(room.getRoomId());
+            ArrayList<Room> roomsWithDetails0 = this.getRoomsWithDetails(room.getRoomId(),false);
             searchedRoomListUpdated.add(roomsWithDetails0.get(0));
         }
 

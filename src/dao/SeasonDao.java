@@ -1,6 +1,7 @@
 package dao;
 
 import core.Database;
+import core.Helper;
 import entity.HotelFeature;
 import entity.Pension;
 import entity.Season;
@@ -125,4 +126,71 @@ public class SeasonDao {
         }
         return true;
     }
+
+
+    public boolean update2(ArrayList<Season> selectedSeasons, int hotelId, ArrayList<Integer> seasonIds) {
+        String query = "INSERT INTO public.season (season_hotel_id, season_start, season_end, season_name) " +
+                "SELECT ?, ?, ?, ? " +
+                "WHERE NOT EXISTS (SELECT 1 FROM public.season s " +
+                "                  WHERE s.season_hotel_id = ? " +
+                "                  AND s.season_start = ? " +
+                "                  AND s.season_end = ? " +
+                "                  AND s.season_name = ?)";
+
+        String selectAllQuery = "SELECT * FROM public.season WHERE season_hotel_id = ?";
+
+        String deleteQuery = "DELETE FROM public.season WHERE season_hotel_id = ? AND season_name = ?";
+
+
+
+        try {
+
+            for (Season season : selectedSeasons) {
+                PreparedStatement insertstatement = this.connection.prepareStatement(query);
+                insertstatement.setInt(1, season.getSeasonHotelId());
+                insertstatement.setDate(2, Date.valueOf(season.getStrtDate()));
+                insertstatement.setDate(3, Date.valueOf(season.getEndDate()));
+                insertstatement.setString(4, season.getSeasonName());
+                insertstatement.setInt(5, season.getSeasonHotelId());
+                insertstatement.setDate(6, Date.valueOf(season.getStrtDate()));
+                insertstatement.setDate(7, Date.valueOf(season.getEndDate()));
+                insertstatement.setString(8, season.getSeasonName());
+                insertstatement.executeUpdate();
+
+            }
+
+            PreparedStatement selectAllStatement = this.connection.prepareStatement(selectAllQuery);
+            selectAllStatement.setInt(1, hotelId);
+            ResultSet resultSet = selectAllStatement.executeQuery();
+
+
+            while (resultSet.next()) {
+                String seasonName = resultSet.getString("season_name");
+                int seasonId = resultSet.getInt("season_id");
+                boolean found = false;
+                for (Season season : selectedSeasons) {
+                    if (seasonName.equals(season.getSeasonName()) ) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                // Eğer veritabanındaki satır listede yoksa sil
+                if (!found && (seasonIds.isEmpty() || !seasonIds.contains(seasonId))) {
+                    PreparedStatement deleteStatement = this.connection.prepareStatement(deleteQuery);
+                    deleteStatement.setInt(1, hotelId);
+                    deleteStatement.setString(2, seasonName);
+                    deleteStatement.executeUpdate();
+                }
+            }
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+
 }

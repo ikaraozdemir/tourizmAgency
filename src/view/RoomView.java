@@ -69,15 +69,16 @@ public class RoomView extends Layout {
         cbRoomFeatures.addAll(Arrays.asList(tv_cb, kasa_cb, minibar_cb, projeksiyon_cb, konsol_cb));
 
         if (this.room.getRoomId() != 0) {
+
             this.fld_room_stock.setText(String.valueOf(this.room.getRoomStock()));
             this.fld_room_adult_prc.setText(String.valueOf(this.room.getPriceAdult()));
             this.fld_room_child_prc.setText(String.valueOf(this.room.getPriceChild()));
             ArrayList<RoomFeature> featuresFromDb = roomFeatureManager.getFeaturesByRoomId(this.room.getRoomId());
 
             for (JCheckBox checkBox : cbRoomFeatures) {
+
                 for (RoomFeature feature : featuresFromDb) {
                     String output = feature.getRoomFeature().keySet().iterator().next();
-
                     if (checkBox.getText().equalsIgnoreCase((output))) {
                         checkBox.setSelected(true);
                     } else {
@@ -144,11 +145,13 @@ public class RoomView extends Layout {
 
                 if (this.room.getRoomId() != 0) {
                     result = this.roomManager.update(this.room);
-                    this.roomFeatureManager.delete(this.room.getRoomId());
+
                     for (RoomFeature feature : selectedFeatures) {
                         feature.setRoomFeatureRoomId(this.room.getRoomId());
-                        result2 = roomFeatureManager.save(feature);
                     }
+
+                    result2 = roomFeatureManager.update2(selectedFeatures, this.room.getRoomId());
+
                     if (this.room.getRoomId() != 0 && result && result2) {
                         Helper.showMessage("done");
                         dispose();

@@ -1,6 +1,7 @@
 package dao;
 
 import core.Database;
+import core.Helper;
 import entity.HotelFeature;
 import entity.Pension;
 
@@ -109,21 +110,73 @@ public class PensionDao {
 
     }
 
-    public boolean update(Pension pension) {
-        String query = "UPDATE public.pension SET " +
-                "pension_hotel_id = ? , " +
-                "pension_types = ? , " +
-                "WHERE pension_id = ?";
-        try {
-            PreparedStatement pr = this.connection.prepareStatement(query);
-            pr.setInt(1, pension.getPensionHotelId());
-            pr.setString(2, pension.getPensionType());
-            pr.setInt(3, pension.getPensionId());
 
-            return pr.executeUpdate() != -1;
+    public boolean update2(ArrayList<Pension> selectedPensions, int hotelId, ArrayList<Integer> pensionIds) {
+        String insertQuery = "INSERT INTO public.pension (pension_hotel_id, pension_types) " +
+                "SELECT ?, ? " +
+                "WHERE NOT EXISTS (SELECT 1 FROM public.pension WHERE pension_hotel_id = ? AND pension_types = ?)";
+
+        String selectAllQuery = "SELECT * FROM public.pension WHERE pension_hotel_id = ?";
+
+        String deleteQuery = "DELETE FROM public.pension WHERE pension_hotel_id = ? AND pension_types = ?";
+
+        try {
+            // Ekleme işlemleri
+            for (Pension pension : selectedPensions) {
+                PreparedStatement insertStatement = this.connection.prepareStatement(insertQuery);
+                insertStatement.setInt(1, hotelId);
+                insertStatement.setString(2, pension.getPensionType());
+                insertStatement.setInt(3, hotelId);
+                insertStatement.setString(4, pension.getPensionType());
+                insertStatement.executeUpdate();
+            }
+
+            // Veritabanından tüm ilgili satırları al
+            PreparedStatement selectAllStatement = this.connection.prepareStatement(selectAllQuery);
+            selectAllStatement.setInt(1, hotelId);
+            ResultSet resultSet = selectAllStatement.executeQuery();
+
+
+            // Silme işlemi
+            while (resultSet.next()) {
+                String pensionType = resultSet.getString("pension_types");
+                int pensionId = resultSet.getInt("pension_id");
+                boolean found = false;
+                for (Pension pension : selectedPensions) {
+                    if (pensionType.equals(pension.getPensionType())) {
+                        found = true;
+                        break;
+                    }
+
+                }
+
+                // Eğer veritabanındaki satır listede yoksa sil
+                if (!found && (pensionIds.isEmpty() || !pensionIds.contains(pensionId))) {
+                    PreparedStatement deleteStatement = this.connection.prepareStatement(deleteQuery);
+                    deleteStatement.setInt(1, hotelId);
+                    deleteStatement.setString(2, pensionType);
+                    deleteStatement.executeUpdate();
+                }
+            }
+
+
+            for (int pensionId : pensionIds) {
+                boolean found2 = true;
+                for (Pension pension : selectedPensions) {
+                    if (pension.getPensionId() == pensionId) {
+                        found2 = false;
+                        break;
+                    }
+                }
+                if (!found2) {
+                    Helper.showMessage("cannotUpdate");
+                    return false;
+                }
+            }
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
 }

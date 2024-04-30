@@ -54,7 +54,7 @@ public class ReservationView extends Layout {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         this.lbl_reserv_hotel_name.setText("<html><b>Otel:</b> " + room.getHotel().getHotelName() + "</html>");
-        this.lbl_reserv_room.setText("<html><b>Oda Tipi:</b> " + room.getPension().getPensionType() +"</html>");
+        this.lbl_reserv_room.setText("<html><b>Pansiyon Tipi:</b> " + room.getPension().getPensionType() +"</html>");
         this.lbl_resrv_child.setText("<html><b>Çocuk Sayısı:</b> " + child + "</html>");
         this.lbl_reserv_adult.setText("<html><b>Yetişkin Sayısı:</b> " + adult + "</html>");
         this.lbl_checkout.setText("<html><b>Check-out:</b> " + this.checkOut + "</html>");

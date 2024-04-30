@@ -35,13 +35,6 @@ public class PensionManager {
         return this.pensionDao.getPensionsByHotelId(id);
     }
 
-    public boolean update(Pension pension) {
-        if (this.getById(pension.getPensionId()) == null) {
-            Helper.showMessage("notFound");
-            return false;
-        }
-        return this.pensionDao.update(pension);
-    }
 
     public boolean delete(int hotelId) {
         if (this.getPensionsByHotelId(hotelId) == null) {
@@ -50,4 +43,13 @@ public class PensionManager {
         }
         return this.pensionDao.delete(hotelId);
     }
+
+    public boolean update2(ArrayList<Pension> selectedPensions, int hotelId, ArrayList<Integer> pensionIds) {
+        if (hotelId == 0) {
+            Helper.showMessage("notFound");
+            return false;
+        }
+        return this.pensionDao.update2(selectedPensions, hotelId, pensionIds);
+    }
+
 }

@@ -56,6 +56,14 @@ public class SeasonManager {
         return this.seasonDao.deleteByHotelId(hotelId);
     }
 
+    public boolean update2(ArrayList<Season> selectedSeasons, int hotelId, ArrayList<Integer> seasonIds) {
+        if (hotelId == 0) {
+            Helper.showMessage("notFound");
+            return false;
+        }
+        return this.seasonDao.update2(selectedSeasons, hotelId, seasonIds);
+    }
+
     public ArrayList<Object[]> getForTable(int size, ArrayList<Season> seasons) {
         ArrayList<Object[]> seasonList = new ArrayList<>();
         for (Season season : seasons) {

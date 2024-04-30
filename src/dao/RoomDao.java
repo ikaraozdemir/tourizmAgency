@@ -38,21 +38,7 @@ public class RoomDao {
         return obj;
     }
 
-    public Room getByHotelId(int hotelid) {
-        Room obj = null;
-        String query = "SELECT * FROM public.room WHERE room_hotel_id = ?";
-        try {
-            PreparedStatement pr = this.connection.prepareStatement(query);
-            pr.setInt(1, hotelid);
-            ResultSet rs = pr.executeQuery();
-            if (rs.next()) {
-                obj = this.match(rs);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return obj;
-    }
+
 
     public Room getBySeasonId(int seasonId) {
         Room obj = null;
@@ -78,6 +64,22 @@ public class RoomDao {
         ArrayList<Room> rooms = new ArrayList<>();
         try {
             ResultSet rs = this.connection.createStatement().executeQuery(query);
+            while (rs.next()) {
+                rooms.add(this.match(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rooms;
+    }
+
+    public ArrayList<Room> getByHotelId(int hotelid) {
+        ArrayList<Room> rooms = new ArrayList<>();
+        String query = "SELECT * FROM public.room WHERE room_hotel_id = ?";
+        try {
+            PreparedStatement pr = this.connection.prepareStatement(query);
+            pr.setInt(1, hotelid);
+            ResultSet rs = pr.executeQuery();
             while (rs.next()) {
                 rooms.add(this.match(rs));
             }
@@ -175,7 +177,6 @@ public class RoomDao {
             ResultSet generatedKeys = pr.getGeneratedKeys();
 
             if (generatedKeys.next()) {
-                System.out.println(generatedKeys.getInt(1));
                 generatedId = generatedKeys.getInt(1);
             } else {
                 throw new SQLException("Oda ekleme başarısız, oda id alınamadı.");
@@ -186,11 +187,13 @@ public class RoomDao {
         return generatedId;
     }
 
-    public ArrayList<Room> getRoomsWithDetails(int id) {
+    public ArrayList<Room> getRoomsWithDetails(int id, boolean isHotelId) {
         ArrayList<Room> rooms = new ArrayList<>();
         String queryWhere = "";
+        String idColumnName = isHotelId ? "h.hotel_id" : "r.room_id";
+
         if (id != -1) {
-            queryWhere = " WHERE room_id = " + id;
+            queryWhere = " WHERE " + idColumnName + " = " + id;
         }
 
         String query = "SELECT " +
@@ -234,12 +237,14 @@ public class RoomDao {
                 room.setHotel(hotel);
 
                 Season season = new Season();
+                season.setSeasonId(rs.getInt("season_id"));
                 season.setSeasonName(rs.getString("season_name"));
                 season.setStrtDate(rs.getDate("season_start").toLocalDate());
                 season.setEndDate(rs.getDate("season_end").toLocalDate());
                 room.setSeason(season);
 
                 Pension pension = new Pension();
+                pension.setPensionId(rs.getInt("pension_id"));
                 pension.setPensionType(rs.getString("pension_types"));
                 room.setPension(pension);
 

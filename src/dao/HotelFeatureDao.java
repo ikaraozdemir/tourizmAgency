@@ -1,7 +1,9 @@
 package dao;
 
 import core.Database;
+import core.Helper;
 import entity.HotelFeature;
+import entity.Pension;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -56,21 +58,26 @@ public class HotelFeatureDao {
         return hotelFeature;
     }
 
-    public boolean update(HotelFeature hotelFeature) {
-        String query = "UPDATE public.hotel_features SET " +
-                "hotel_features = ?  " +
-                "WHERE hotel_features_hotel_id = ?";
+    public boolean update2(HotelFeature hotelFeature) {
+        String query = "INSERT INTO public.hotel_features (hotel_features_hotel_id, hotel_features) " +
+                "SELECT ?, ? " +
+                "WHERE NOT EXISTS (SELECT * FROM public.hotel_features hf " +
+                "                  WHERE hf.hotel_features_hotel_id = ? " +
+                "                  AND hf.hotel_features = ?)";
         try {
             PreparedStatement pr = this.connection.prepareStatement(query);
-            pr.setString(1, hotelFeature.getHotelFeature());
-            pr.setInt(2, hotelFeature.getHotelFeatureHotelId());
+            pr.setInt(1, hotelFeature.getHotelFeatureHotelId());
+            pr.setString(2, hotelFeature.getHotelFeature());
+            pr.setInt(3, hotelFeature.getHotelFeatureHotelId());
+            pr.setString(4, hotelFeature.getHotelFeature());
 
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
+
 
     public boolean save(HotelFeature hotelFeature) {
         String query = "INSERT INTO public.hotel_features (" +

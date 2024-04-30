@@ -1,20 +1,17 @@
 package view;
 
-import business.HotelFeatureManager;
-import business.HotelManager;
-import business.PensionManager;
+import business.*;
 
-import business.SeasonManager;
 import core.Helper;
-import entity.Hotel;
-import entity.HotelFeature;
-import entity.Pension;
-import entity.Season;
+import entity.*;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class HotelView extends Layout {
     private JPanel container;
@@ -49,6 +46,7 @@ public class HotelView extends Layout {
     private final HotelFeatureManager hotelFeatureManager;
     private final PensionManager pensionManager;
     private final SeasonManager seasonManager;
+    private final RoomManager roomManager;
     private final ArrayList<JCheckBox> cbHotelFeatures = new ArrayList<>();
     private final ArrayList<JCheckBox> cbPension = new ArrayList<>();
 
@@ -57,6 +55,7 @@ public class HotelView extends Layout {
         this.hotelFeatureManager = new HotelFeatureManager();
         this.pensionManager = new PensionManager();
         this.seasonManager = new SeasonManager();
+        this.roomManager = new RoomManager();
         this.add(container);
         this.hotel = hotel;
         this.guiInitialize(700, 700);
@@ -188,24 +187,31 @@ public class HotelView extends Layout {
                 }
                 if (this.hotel.getHotelId() != 0) {
                     result = this.hotelManager.update(this.hotel);
-                    this.hotelFeatureManager.delete(this.hotel.getHotelId());
+
                     for (HotelFeature feature : selectedFeatures) {
-//                        System.out.println(feature.getHotelFeature() + "alındı");
                         feature.setHotelFeatureHotelId(this.hotel.getHotelId());
-                        result2 = hotelFeatureManager.save(feature);
+                        result2 = hotelFeatureManager.update2(feature);
                     }
-                    this.pensionManager.delete(this.hotel.getHotelId());
-                    for (Pension pension : selectedPensions) {
-//                        System.out.println(pension.getPensionType() + "alındı");
-                        pension.setPensionHotelId(this.hotel.getHotelId());
-                        result3 = pensionManager.save(pension);
+
+
+                    ArrayList<Integer> pensionIds = new ArrayList<>();
+                    ArrayList<Integer> seasonIds = new ArrayList<>();
+                    if(this.roomManager.getByHotelId(this.hotel.getHotelId()) != null){
+                        ArrayList<Room> rooms =this.roomManager.getByHotelId(this.hotel.getHotelId());
+                        for(Room room: rooms) {
+                            pensionIds.add(room.getRoomPensionId());
+                            seasonIds.add(room.getRoomSeasonId());
+
+                        }
                     }
-                    this.seasonManager.delete(this.hotel.getHotelId());
-                    for (Season season : this.hotel.getSeasons()) {
-//                        System.out.println(season.getSeasonName() + "alındı");
+
+                    for (Season season : seasons) {
                         season.setSeasonHotelId(this.hotel.getHotelId());
-                        result4 = seasonManager.save(season);
                     }
+
+                    result3 = pensionManager.update2(selectedPensions, this.hotel.getHotelId(), pensionIds);
+                    result4 = seasonManager.update2(seasons, this.hotel.getHotelId(),seasonIds);
+
                     dispose();
                     if (result && result2 && result3 && result4) {
                         Helper.showMessage("done");

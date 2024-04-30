@@ -3,6 +3,7 @@ package business;
 import core.Helper;
 import dao.HotelFeatureDao;
 import dao.UserDao;
+import entity.Hotel;
 import entity.HotelFeature;
 import entity.User;
 
@@ -31,8 +32,16 @@ public class HotelFeatureManager {
         return this.hotelFeatureDao.save(hotelFeature);
     }
 
-    public ArrayList<HotelFeature> getFeaturesByHotelId(int id){
+    public ArrayList<HotelFeature> getFeaturesByHotelId(int id) {
         return this.hotelFeatureDao.getFeaturesByHotelId(id);
+    }
+
+    public boolean update2(HotelFeature hotelFeature) {
+        if (hotelFeature.getHotelFeatureHotelId() == 0) {
+            Helper.showMessage("notFound");
+            return false;
+        }
+        return this.hotelFeatureDao.update2(hotelFeature);
     }
 
     public boolean delete(int hotelId) {
@@ -42,6 +51,4 @@ public class HotelFeatureManager {
         }
         return this.hotelFeatureDao.delete(hotelId);
     }
-
-
 }

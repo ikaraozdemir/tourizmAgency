@@ -4,6 +4,7 @@ import core.Helper;
 import dao.HotelFeatureDao;
 import dao.RoomFeatureDao;
 import entity.HotelFeature;
+import entity.Pension;
 import entity.RoomFeature;
 
 import java.util.ArrayList;
@@ -41,4 +42,13 @@ public class RoomFeatureManager {
         }
         return this.roomFeatureDao.delete(roomId);
     }
+
+    public boolean update2(ArrayList<RoomFeature> selectedRoomFeature, int roomId) {
+        if (roomId == 0) {
+            Helper.showMessage("notFound");
+            return false;
+        }
+        return this.roomFeatureDao.update2(selectedRoomFeature, roomId);
+    }
+
 }

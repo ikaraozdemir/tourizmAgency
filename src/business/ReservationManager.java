@@ -93,7 +93,7 @@ public class ReservationManager {
         for (Reservation reservation : reservList) {
 
             Hotel hotel = this.hotelManager.getById(reservation.getReservHotelId());
-            ArrayList<Room> rooms = this.roomManager.getRoomsWithDetails(reservation.getReservRoomId());
+            ArrayList<Room> rooms = this.roomManager.getRoomsWithDetails(reservation.getReservRoomId(), false);
 
             StringBuilder hotelFeatures = new StringBuilder();
             String roomType = "";

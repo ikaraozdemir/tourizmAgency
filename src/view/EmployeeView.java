@@ -110,7 +110,7 @@ public class EmployeeView extends Layout {
         Object[] col_room = new Object[]{"ID", "Otel", "Otel ID", "Sezon Başlangıcı", "Sezon Bitişi", "Pansiyon Tipi",
                 "Oda Stoğu", "Yetişkin Gecelik Fiyat (TL)", "Çocuk Gecelik Fiyat (TL)", "Oda Tipi", "Oda Özellikleri"};
 
-        ArrayList<Object[]> roomList = this.roomManager.getForTable(col_room.length, this.roomManager.getRoomsWithDetails(-1));
+        ArrayList<Object[]> roomList = this.roomManager.getForTable(col_room.length, this.roomManager.getRoomsWithDetails(-1,false));
         createTable(this.tmbl_rooms, this.tbl_emp_rooms, col_room, roomList);
     }
 
@@ -136,16 +136,25 @@ public class EmployeeView extends Layout {
             });
         });
 
-//        hotel_menu.add("Güncelle").addActionListener(e -> {
-//            int selectHotelId = this.getTableSelectedRow(tbl_emp_hotels, 0);
-//            HotelView hotelView = new HotelView(this.hotelManager.getById(selectHotelId));
-//            hotelView.addWindowListener(new WindowAdapter() {
-//                @Override
-//                public void windowClosed(WindowEvent e) {
-//                    loadHotelTable();
-//                }
-//            });
-//        });
+        hotel_menu.add("Güncelle").addActionListener(e -> {
+            int selectHotelId = this.getTableSelectedRow(tbl_emp_hotels, 0);
+
+            if (this.reservationManager.getByHotelId(selectHotelId) != null) {
+                Helper.showMessage("cannotDelete");
+            }else{
+                HotelView hotelView = new HotelView(this.hotelManager.getById(selectHotelId));
+                hotelView.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+
+                        loadHotelTable();
+                        loadSeasonTable();
+                        loadRoomTable();
+
+                    }
+                });
+            }
+        });
 
         hotel_menu.add("Sil").addActionListener(e -> {
             if (Helper.confirm("sure")) {
@@ -162,10 +171,10 @@ public class EmployeeView extends Layout {
                     this.seasonManager.deleteByHotelId(selectHotelId);
                 }
 
-                if (roomManager.getByHotelId(selectHotelId) != null) {
-                    roomFeatureManager.delete(roomManager.getByHotelId(selectHotelId).getRoomId());
-                    this.roomManager.deleteByHotelId(selectHotelId);
-                }
+//                if (roomManager.getByHotelId(selectHotelId) != null) {
+//                    roomFeatureManager.delete(roomManager.getByHotelId(selectHotelId).get(0).getRoomId());
+//                    this.roomManager.deleteByHotelId(selectHotelId);
+//                }
 
                 if (reservationManager.getByHotelId(selectHotelId) != null) {
                     this.reservationManager.deleteByHotelId(selectHotelId);
@@ -276,7 +285,7 @@ public class EmployeeView extends Layout {
             if (this.reservationManager.getByRoomId(selectRoomId) != null) {
                 Helper.showMessage("cannotUpdate");
             } else {
-                RoomView roomView = new RoomView(this.roomManager.getRoomsWithDetails(selectRoomId).get(0), this.hotelManager.getById(selectHotelId));
+                RoomView roomView = new RoomView(this.roomManager.getRoomsWithDetails(selectRoomId,false).get(0), this.hotelManager.getById(selectHotelId));
                 roomView.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
@@ -315,7 +324,7 @@ public class EmployeeView extends Layout {
         reserv_menu.add("Güncelle").addActionListener(e -> {
             int selectReservId = this.getTableSelectedRow(tbl_emp_reserv, 0);
             Reservation reservation = this.reservationManager.getById(selectReservId);
-            ArrayList<Room> room = this.roomManager.getRoomsWithDetails(reservation.getReservRoomId());
+            ArrayList<Room> room = this.roomManager.getRoomsWithDetails(reservation.getReservRoomId(),false);
             Hotel hotel = this.hotelManager.getById(reservation.getReservHotelId());
             room.get(0).setHotel(hotel);
             String adultCount = String.valueOf(reservation.getAdultCount());

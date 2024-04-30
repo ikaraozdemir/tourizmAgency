@@ -1,7 +1,9 @@
 package dao;
 
 import core.Database;
+import core.Helper;
 import entity.HotelFeature;
+import entity.Pension;
 import entity.Room;
 import entity.RoomFeature;
 
@@ -115,4 +117,74 @@ public class RoomFeatureDao {
         }
         return true;
     }
+
+    public boolean update2(ArrayList<RoomFeature> selectedRoomFeatures, int roomId) {
+        String insertQuery = "INSERT INTO public.room_features (room_feature_room_id, feature_name, feature_value) " +
+                "SELECT ?, ?, ? " +
+                "WHERE NOT EXISTS (SELECT 1 FROM public.room_features WHERE room_feature_room_id = ? AND feature_name = ? AND feature_value = ?)";
+
+        String selectAllQuery = "SELECT * FROM public.room_features WHERE room_feature_room_id= ?";
+
+        String deleteQuery = "DELETE FROM public.room_features WHERE room_feature_id = ? AND feature_name = ?";
+
+        try {
+            // Ekleme işlemleri
+            for (RoomFeature roomFeature : selectedRoomFeatures) {
+
+                String featureKey = roomFeature.getRoomFeature().keySet().toString();
+                String featureKeyCleaned = featureKey.substring(1, featureKey.length() - 1);
+
+                String featureValue = roomFeature.getRoomFeature().values().toString();
+                String featureValueCleaned = featureValue.substring(1, featureValue.length() - 1);
+
+                PreparedStatement insertStatement = this.connection.prepareStatement(insertQuery);
+                insertStatement.setInt(1, roomId);
+                insertStatement.setString(2, featureKeyCleaned);
+                insertStatement.setString(3, featureValueCleaned);
+                insertStatement.setInt(4, roomId);
+                insertStatement.setString(5, featureKeyCleaned);
+                insertStatement.setString(6, featureValueCleaned);
+
+                insertStatement.executeUpdate();
+            }
+
+            // Veritabanından tüm ilgili satırları al
+            PreparedStatement selectAllStatement = this.connection.prepareStatement(selectAllQuery);
+            selectAllStatement.setInt(1, roomId);
+            ResultSet resultSet = selectAllStatement.executeQuery();
+
+
+            // Silme işlemi
+            while (resultSet.next()) {
+                String featureName = resultSet.getString("feature_name");
+                String featureValue = resultSet.getString("feature_value");
+
+                boolean found = false;
+                for (RoomFeature roomFeature : selectedRoomFeatures) {
+                    String featureKey2 = roomFeature.getRoomFeature().keySet().toString();
+                    String featureKeyCleaned2 = featureKey2.substring(1, featureKey2.length() - 1);
+
+
+                    if (featureName.equals(featureKeyCleaned2)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                // Eğer veritabanındaki satır listede yoksa sil
+                if (!found) {
+                    PreparedStatement deleteStatement = this.connection.prepareStatement(deleteQuery);
+                    deleteStatement.setInt(1, roomId);
+                    deleteStatement.setString(2, featureName);
+                    deleteStatement.executeUpdate();
+                }
+            }
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
